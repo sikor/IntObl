@@ -5,44 +5,6 @@ __author__ = 'pawel'
 from functools import cmp_to_key
 
 
-parameters = ['negativePrice', 'value']
-
-
-class Problem:
-
-    def mate(self, p1, p2):
-        """
-        Recombination(krzyżowanie) in place (in situ)
-        :param p1: parent1
-        :param p2: parent2
-        :return: void, p1 and p2 are changed in place.
-        """
-        pass
-
-    def mutate(self, item):
-        """
-        Mutate in situ
-        :param item:
-        :return: void
-        """
-        pass
-
-    def calculate_parameters(self, item):
-        """
-        calculate cost parameters for given item
-        :param item:
-        :return: tuple of parameters
-        """
-
-    def generate_initial_population(self, n):
-        """
-
-        :param n: size of population
-        :return: list of population items
-        """
-        pass
-
-
 def first_is_dominating_second(first, second):
     is_better = False
     for val1, val2 in zip(first.fitness.values, second.fitness.values):

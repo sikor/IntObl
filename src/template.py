@@ -1,6 +1,6 @@
-__author__ = 'pawel'
+from nsga import select_tournament
 
-import random
+__author__ = 'pawel'
 
 from deap import base
 from deap import creator
@@ -12,43 +12,76 @@ import numpy
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 
 
-
-
-
-class Individual(list):
-    def __init__(self):
-        super().__init__()
-        self.fitness = creator.FitnessMin()
-
-
-class GeneticFunctions(object):
-    def eval_individual(self):
+class Problem:
+    def mate(self, p1, p2):
+        """
+        Recombination(krzyżowanie) in place (in situ)
+        :param p1: parent1
+        :param p2: parent2
+        :return: void, p1 and p2 are changed in place.
+        """
         pass
 
-    def mate(self):
+    def mutate(self, item):
+        """
+        Mutate in situ
+        :param item:
+        :return: void
+        """
         pass
 
-    def mutate(self):
+    def calculate_parameters(self, item):
+        """
+        calculate cost parameters for given item
+        :param item:
+        :return: tuple of parameters
+        """
+
+    def generate_initial_population(self, n):
+        """
+
+        :param n: size of population
+        :return: list of population items
+        """
         pass
 
-    def individual(self):
-        return Individual()
+    def individual_type(self):
+        """
+
+        :return: individual type
+        """
+        pass
+
+    def individual_initializer(self):
+        """
+
+        :return: method which can be called like: method(item)
+        """
+        pass
 
 
-def solver(genetic_functions: GeneticFunctions, population_size=100, generations_num=500,
-           verbose=False, chart=False):
-
+def solver(problem: Problem, population_size=100, generations_num=500,
+           verbose=False, chart=False, weights=(-1.0,)):
     toolbox = base.Toolbox()
-    toolbox.register("individual", genetic_functions.individual)
+
+    creator.create("Fitness", base.Fitness, weights=weights)
+    creator.create("Individual", problem.individual_type(), fitness=creator.Fitness)
+
+
+    # Structure initializers
+    toolbox.register("individual", tools.initRepeat, creator.Individual,
+                     toolbox.attr_bool, 100)
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
-    toolbox.register("evaluate", genetic_functions.eval_individual)
+    toolbox.register("population", problem.generate_initial_population, population_size)
+
+    toolbox.register("evaluate", problem.calculate_parameters)
     # toolbox.register("mate", genetic_functions.crossover)
-    toolbox.register("mate", genetic_functions.mate)
+    toolbox.register("mate", problem.mate)
     # toolbox.register("mate", tools.cxOnePoint)
-    toolbox.register("mutate", genetic_functions.mutate, percentage_clients=0.05)
+    toolbox.register("mutate", problem.mutate, percentage_clients=0.05)
     # toolbox.register("mutate", tools.mutUniformInt, low=0, up=(len(problem.warehouses)-1), indpb=0.05)
-    toolbox.register("select", tools.selTournament, tournsize=int(population_size * 0.15))
+    toolbox.register("select", select_tournament, tournsize=3)
     # toolbox.register("select", tools.selBest)
 
     population = toolbox.population(n=population_size)
@@ -59,10 +92,10 @@ def solver(genetic_functions: GeneticFunctions, population_size=100, generations
     stats.register("min", numpy.min)
     stats.register("max", numpy.max)
 
-    population, log = algorithms.eaMuCommaLambda(population, toolbox, mu=int(population_size * 0.3),
-                                                 lambda_=int(population_size * 0.5),
-                                                 cxpb=0.1, mutpb=0.8, ngen=generations_num, stats=stats, halloffame=hof,
-                                                 verbose=verbose)
+    population, log = algorithms.eaMuPlusLambda(population, toolbox, mu=int(population_size * 0.3),
+                                                lambda_=int(population_size * 0.5),
+                                                cxpb=0.1, mutpb=0.8, ngen=generations_num, stats=stats, halloffame=hof,
+                                                verbose=verbose)
 
     if chart:
         generations_num = log.select("gen")

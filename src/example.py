@@ -63,15 +63,16 @@ def main():
                 del mutant.fitness.values
 
         # Evaluate the individuals with an invalid fitness
-        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+        invalid_ind = offspring
         fitnesses = map(toolbox.evaluate, invalid_ind)
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
 
         print("  Evaluated %i individuals" % len(invalid_ind))
 
-        # The population is entirely replaced by the offspring
-        pop[:] = offspring
+        # The offspring is appended to population
+
+        pop += offspring
 
         # Gather all the fitnesses in one list and print the stats
         fits = [ind.fitness.values[0] for ind in pop]
