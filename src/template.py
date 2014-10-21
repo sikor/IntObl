@@ -67,7 +67,7 @@ def solver(problem: Problem, population_size=100, generations_num=500,
     toolbox.register("population", tools.initRepeat, list, create_individual)
     toolbox.register("evaluate", problem.calculate_parameters)
     toolbox.register("mate", problem.mate)
-    toolbox.register("mutate", problem.mutate, percentage_clients=0.05)
+    toolbox.register("mutate", problem.mutate)
     toolbox.register("select", select_tournament, tournsize=3)
 
     population = toolbox.population(n=population_size)
@@ -79,7 +79,7 @@ def solver(problem: Problem, population_size=100, generations_num=500,
     stats.register("max", numpy.max)
 
     population, log = algorithms.eaMuPlusLambda(population, toolbox, mu=population_size,
-                                                lambda_=population,
+                                                lambda_=population_size,
                                                 cxpb=0.1, mutpb=0.8, ngen=generations_num, stats=stats, halloffame=hof,
                                                 verbose=verbose)
 
