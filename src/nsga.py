@@ -47,6 +47,7 @@ def sort_by_domination_and_crowd(population):
 
 
 def select_tournament(individuals, k, tournsize):
+    calc_crowd(individuals)
     chosen = []
     for i in range(k):
         aspirants = selection.selRandom(individuals, tournsize)
