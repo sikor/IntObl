@@ -38,6 +38,7 @@ class ZdtProblem(Problem):
             attributes[random.randint(0, len(attributes) - 1)] = self._initialise_attribute()
 
         random.choice([swap, identity, change_one])(item.attributes)
+        return item,
 
     def calculate_parameters(self, item):
         return self.F(item.attributes)
