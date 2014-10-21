@@ -94,7 +94,7 @@ def solver(problem: Problem, population_size=100, generations_num=500,
 
     population = toolbox.population(n=population_size)
     hof = tools.HallOfFame(1)
-    stats = tools.Statistics(lambda ind: ind.fitness.values)
+    stats = tools.Statistics(lambda ind: sum(ind.fitness.values))
     stats.register("avg", numpy.mean)
     stats.register("std", numpy.std)
     stats.register("min", numpy.min)
@@ -102,7 +102,7 @@ def solver(problem: Problem, population_size=100, generations_num=500,
 
     population, log = algorithms.eaMuPlusLambda(population, toolbox, mu=population_size,
                                                 lambda_=population_size,
-                                                cxpb=0.1, mutpb=0.8, ngen=generations_num, stats=stats, halloffame=hof,
+                                                cxpb=0.2, mutpb=0.8, ngen=generations_num, stats=stats, halloffame=hof,
                                                 verbose=verbose)
 
     print('HV(11,11): ' + str(zdt_hv(population)))
