@@ -2,6 +2,8 @@ from math import sqrt, sin
 import math
 import random
 
+from deap import tools
+
 from src.template import Problem
 
 
@@ -15,7 +17,10 @@ class ZdtProblem(Problem):
         self.n = 30
 
     def mate(self, p1, p2):
-        return Point([random.choice(one_or_two) for one_or_two in zip(p1.attributes, p2.attributes)])
+        attrs1, attrs2 = tools.cxTwoPoint(p1.attributes, p2.attributes)
+        p1.attributes = attrs1
+        p2.attributes = attrs2
+        return p1, p2
 
     def mutate(self, item):
         def swap(attributes):
