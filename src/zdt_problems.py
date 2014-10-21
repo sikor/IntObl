@@ -15,7 +15,7 @@ class ZdtProblem(Problem):
         self.n = 30
 
     def mate(self, p1, p2):
-        return Point([random.choice(one_or_two) for one_or_two in zip(p1.attributes, p2.random.choice)])
+        return Point([random.choice(one_or_two) for one_or_two in zip(p1.attributes, p2.attributes)])
 
     def mutate(self, item):
         def swap(attributes):
