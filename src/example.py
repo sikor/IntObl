@@ -28,7 +28,8 @@ toolbox.register("select", tools.selTournament, tournsize=3)
 def main():
     random.seed(64)
 
-    pop = toolbox.population(n=300)
+    N = 300
+    pop = toolbox.population(n=N)
     CXPB, MUTPB, NGEN = 0.5, 0.2, 40
 
     print("Start of evolution")
@@ -45,7 +46,7 @@ def main():
         print("-- Generation %i --" % g)
 
         # Select the next generation individuals
-        offspring = toolbox.select(pop, len(pop))
+        offspring = toolbox.select(pop, N)
         # Clone the selected individuals
         offspring = list(map(toolbox.clone, offspring))
 
