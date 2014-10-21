@@ -12,6 +12,9 @@ import numpy
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 
 
+
+
+
 class Individual(list):
     def __init__(self):
         super().__init__()
