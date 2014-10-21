@@ -9,8 +9,6 @@ from deap import algorithms
 import matplotlib.pyplot as plt
 import numpy
 
-creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
-
 
 class Problem:
     def mate(self, p1, p2):
@@ -37,14 +35,6 @@ class Problem:
         :return: tuple of parameters
         """
 
-    def generate_initial_population(self, n):
-        """
-
-        :param n: size of population
-        :return: list of population items
-        """
-        pass
-
     def individual_type(self):
         """
 
@@ -57,7 +47,7 @@ class Problem:
 
         :return: method which can be called like: method(item)
         """
-        pass
+        return id
 
 
 def solver(problem: Problem, population_size=100, generations_num=500,
@@ -67,22 +57,18 @@ def solver(problem: Problem, population_size=100, generations_num=500,
     creator.create("Fitness", base.Fitness, weights=weights)
     creator.create("Individual", problem.individual_type(), fitness=creator.Fitness)
 
+    initializer = problem.individual_initializer()
 
-    # Structure initializers
-    toolbox.register("individual", tools.initRepeat, creator.Individual,
-                     toolbox.attr_bool, 100)
-    toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+    def create_individual():
+        individual = creator.Individual()
+        initializer(individual)
+        return individual
 
-    toolbox.register("population", problem.generate_initial_population, population_size)
-
+    toolbox.register("population", tools.initRepeat, list, create_individual)
     toolbox.register("evaluate", problem.calculate_parameters)
-    # toolbox.register("mate", genetic_functions.crossover)
     toolbox.register("mate", problem.mate)
-    # toolbox.register("mate", tools.cxOnePoint)
     toolbox.register("mutate", problem.mutate, percentage_clients=0.05)
-    # toolbox.register("mutate", tools.mutUniformInt, low=0, up=(len(problem.warehouses)-1), indpb=0.05)
     toolbox.register("select", select_tournament, tournsize=3)
-    # toolbox.register("select", tools.selBest)
 
     population = toolbox.population(n=population_size)
     hof = tools.HallOfFame(1)
@@ -92,8 +78,8 @@ def solver(problem: Problem, population_size=100, generations_num=500,
     stats.register("min", numpy.min)
     stats.register("max", numpy.max)
 
-    population, log = algorithms.eaMuPlusLambda(population, toolbox, mu=int(population_size * 0.3),
-                                                lambda_=int(population_size * 0.5),
+    population, log = algorithms.eaMuPlusLambda(population, toolbox, mu=population_size,
+                                                lambda_=population,
                                                 cxpb=0.1, mutpb=0.8, ngen=generations_num, stats=stats, halloffame=hof,
                                                 verbose=verbose)
 
