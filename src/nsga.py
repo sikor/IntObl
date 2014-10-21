@@ -16,7 +16,7 @@ def first_is_dominating_second(first, second):
 
 
 def get_dist(i1, i2, param):
-    return abs(getattr(i1, param) - getattr(i2, param))
+    return abs(i1.fitness.values[param] - i2.fitness.values[param])
 
 
 def calc_crowd(pop):
