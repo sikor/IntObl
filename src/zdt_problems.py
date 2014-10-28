@@ -17,7 +17,13 @@ class ZdtProblem(Problem):
         self.n = 30
 
     def mate(self, p1, p2):
-        attrs1, attrs2 = tools.cxTwoPoint(p1.attributes, p2.attributes)
+        zipped = zip(p1.attributes, p2.attributes)
+        attrs1 = [random.choice(options) for options in zipped]
+        attrs2 = [random.choice(options) for options in zipped]
+        #attrs1, attrs2 = tools.cxTwoPoint(p1.attributes, p2.attributes)
+        #a1_0, a2_0 = attrs1[0], attrs2[0]
+        #attrs1[0] = a2_0
+        #attrs2[0] = a1_0
         p1.attributes = attrs1
         p2.attributes = attrs2
         return p1, p2
@@ -32,12 +38,16 @@ class ZdtProblem(Problem):
             attributes[attr2] = val1
 
         def identity(attributes):
-            pass
+            attributes[0] = self._initialise_attribute()
 
         def change_one(attributes):
-            attributes[random.randint(0, len(attributes) - 1)] = self._initialise_attribute()
+            #attributes[random.randint(0, len(attributes) - 1)] = self._initialise_attribute()
+            pass
 
-        random.choice([swap, identity, change_one])(item.attributes)
+        for i in range(6):
+            random.choice([swap, identity, change_one])(item.attributes)
+        #if len(list(filter(lambda x: x > 1 or x < 0, item.attributes))) > 0:
+        #    print('WARN')
         return item,
 
     def calculate_parameters(self, item):
@@ -69,7 +79,8 @@ class ZdtProblem(Problem):
         pass
 
     def f2(self, x):
-        return self.g(x[1:]) * self.h(self.f1(x[0]), self.g(x[1:]))
+        g_result = self.g(x[1:])
+        return g_result * self.h(self.f1(x[0]), g_result)
 
     def F(self, x):
         return self.f1(x[0]), self.f2(x)

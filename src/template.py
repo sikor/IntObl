@@ -1,4 +1,4 @@
-from nsga import select_tournament
+from src.nsga import select_tournament
 
 __author__ = 'pawel'
 
@@ -50,6 +50,13 @@ class Problem:
         return id
 
 
+def plot_zdt(population):
+    x_axis = [individual.fitness.values[0] for individual in population]
+    y_axis = [individual.fitness.values[1] for individual in population]
+    plt.plot(x_axis, y_axis, linestyle='None', marker='o', color='r')
+    plt.show()
+
+
 def solver(problem: Problem, population_size=100, generations_num=500,
            verbose=False, chart=False, weights=(-1.0,)):
     toolbox = base.Toolbox()
@@ -83,7 +90,8 @@ def solver(problem: Problem, population_size=100, generations_num=500,
                                                 cxpb=0.1, mutpb=0.8, ngen=generations_num, stats=stats, halloffame=hof,
                                                 verbose=verbose)
 
-    if chart:
+    plot_zdt(population)
+    if chart and False:
         generations_num = log.select("gen")
         fit_mins = log.select("min")
         size_avgs = log.select("avg")
