@@ -5,6 +5,7 @@ import random
 from deap import tools
 
 from src.template import Problem
+from zdt_solutions import zdt3_solution, zdt2_solution, zdt1_solution
 
 
 class Point(object):
@@ -44,7 +45,7 @@ class ZdtProblem(Problem):
             #attributes[random.randint(0, len(attributes) - 1)] = self._initialise_attribute()
             pass
 
-        for i in range(6):
+        for i in range(10):
             random.choice([swap, identity, change_one])(item.attributes)
         #if len(list(filter(lambda x: x > 1 or x < 0, item.attributes))) > 0:
         #    print('WARN')
@@ -90,13 +91,33 @@ class Zdt1(ZdtProblem):
     def h(self, a, b):
         return 1 - sqrt(a / b)
 
+    def get_solution(self):
+        return zdt1_solution
+
+    def get_hv(self):
+        return 120.666666666666
+
 
 class Zdt2(ZdtProblem):
     def h(self, a, b):
         return 1 - pow(a / b, 2)
 
+    def get_solution(self):
+        return zdt2_solution
+
+    def get_hv(self):
+        return 120.333333333333333333
+
 
 class Zdt3(ZdtProblem):
     def h(self, a, b):
         return 1 - sqrt(a / b) - (a / b) * sin(10 * math.pi * a)
+
+    def get_solution(self):
+        return zdt3_solution
+
+    def get_hv(self):
+        return 128.77811613069076060
+
+
 

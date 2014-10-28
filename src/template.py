@@ -1,3 +1,4 @@
+from hvr import zdt_hv, zdt_hvr
 from src.nsga import select_tournament
 
 __author__ = 'pawel'
@@ -11,6 +12,13 @@ import numpy
 
 
 class Problem:
+    def get_hv(self):
+        """
+
+        :return: hv for reference point (11,11)
+        """
+        pass
+
     def mate(self, p1, p2):
         """
         Recombination(krzyżowanie) in place (in situ)
@@ -49,11 +57,18 @@ class Problem:
         """
         return id
 
+    def get_solution(self):
+        """
 
-def plot_zdt(population):
+        :return: dictionary with solution like {'x': [...], 'y': [...], ...}
+        """
+
+
+def plot_zdt(population: list, problem: Problem):
     x_axis = [individual.fitness.values[0] for individual in population]
     y_axis = [individual.fitness.values[1] for individual in population]
     plt.plot(x_axis, y_axis, linestyle='None', marker='o', color='r')
+    plt.plot(problem.get_solution()['x'], problem.get_solution()['y'], color='b')
     plt.show()
 
 
@@ -75,7 +90,7 @@ def solver(problem: Problem, population_size=100, generations_num=500,
     toolbox.register("evaluate", problem.calculate_parameters)
     toolbox.register("mate", problem.mate)
     toolbox.register("mutate", problem.mutate)
-    toolbox.register("select", select_tournament, tournsize=3)
+    toolbox.register("select", select_tournament, tournsize=10)
 
     population = toolbox.population(n=population_size)
     hof = tools.HallOfFame(1)
@@ -90,7 +105,9 @@ def solver(problem: Problem, population_size=100, generations_num=500,
                                                 cxpb=0.1, mutpb=0.8, ngen=generations_num, stats=stats, halloffame=hof,
                                                 verbose=verbose)
 
-    plot_zdt(population)
+    print('HV(11,11): ' + str(zdt_hv(population)))
+    print('HVR: ' + str(zdt_hvr(population, problem)))
+    plot_zdt(population, problem)
     if chart and False:
         generations_num = log.select("gen")
         fit_mins = log.select("min")
