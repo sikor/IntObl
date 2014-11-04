@@ -30,7 +30,7 @@
                         </strategy>
                     </agent>
 
-                    <strategy name="encounterAction" class="org.jage.emas.action.individual.EncounterAction">
+                    <strategy name="encounterAction" class="org.intobl.zdt.EncounterAction">
                         <strategy name="reproductionPredicate" class="org.jage.emas.predicate.HighEnergyPredicate">
                             <property name="threshold" type="Double" value="90"/>
                         </strategy>
@@ -38,7 +38,7 @@
                                   class="org.jage.emas.reproduction.DefaultSexualReproduction"/>
                         <strategy name="asexualReproductionStrategy"
                                   class="org.jage.emas.reproduction.DefaultAsexualReproduction"/>
-                        <strategy name="battleStrategy" class="org.jage.emas.battle.DeterministicFitnessBattle"/>
+                        <strategy name="battleStrategy" class="org.intobl.zdt.DominantBattle"/>
                         <strategy name="battleEnergyTransfer" class="org.jage.emas.energy.ConstantEnergyTransfer">
                             <property name="transferredEnergy" type="Double" value="20.0"/>
                         </strategy>
@@ -97,18 +97,23 @@
                 <constructor-arg type="Long" value="1234567890"/>
             </strategy>
 
-            <strategy name="solutionEvaluator" class="org.jage.evaluation.realvalued.RastriginEvaluator"/>
-            <strategy name="problem" class="org.jage.problem.realvalued.RastriginProblem">
-                <constructor-arg type="Integer" value="${problem.size}"/>
+            <strategy name="solutionEvaluator" class="org.intobl.zdt.Evaluator"/>
+            <!-- Strategy below was needed for age soution factory - we have our own solutin factory-->
+            <!--<strategy name="problem" class="org.jage.problem.realvalued.RastriginProblem">-->
+            <!--<constructor-arg type="Integer" value="${problem.size}"/>-->
+            <!--</strategy>-->
+
+            <strategy name="problem" class="org.intobl.zdt.Zdt1Problem">
+            <constructor-arg type="Integer" value="${problem.size}"/>
             </strategy>
 
-            <strategy name="solutionFactory" class="org.jage.solution.realvalued.RealValuedSolutionFactory"/>
+            <strategy name="solutionFactory" class="org.intobl.zdt.SolutionFactory"/>
 
             <strategy name="recombinationStrategy"
-                      class="org.jage.variation.recombination.realvalued.OnePointRecombination"/>
-            <strategy name="mutationStategy" class="org.jage.variation.mutation.realvalued.NormalMicroMacroMutate">
-                <property name="chanceToMutate" type="Double" value="${feature.chanceToMutate}"/>
-                <property name="mutationRange" type="Double" value="${feature.mutationRange}"/>
+                      class="org.intobl.zdt.Recombination"/>
+            <strategy name="mutationStategy" class="org.intobl.zdt.Mutation">
+                <!--<property name="chanceToMutate" type="Double" value="${feature.chanceToMutate}"/>-->
+                <!--<property name="mutationRange" type="Double" value="${feature.mutationRange}"/>-->
             </strategy>
         </block>
     </include>

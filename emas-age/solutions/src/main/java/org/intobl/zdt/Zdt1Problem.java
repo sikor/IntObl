@@ -7,6 +7,12 @@ import java.util.List;
  */
 public class Zdt1Problem implements IProblem {
 
+    private final int N;
+
+    public Zdt1Problem(int n) {
+        N = n;
+    }
+
     @Override
     public void calculateFitness(SolutionWithFitness solutionWithFitness) {
         ZdtSolution solution = (ZdtSolution) solutionWithFitness;
