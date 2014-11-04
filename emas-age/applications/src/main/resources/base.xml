@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration xmlns="http://age.iisg.agh.edu.pl/schema/age"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://age.iisg.agh.edu.pl/schema/age http://age.iisg.agh.edu.pl/schema/age/age.xsd">
+
+    <component class="org.jage.address.node.DefaultNodeAddressSupplier"/>
+    <component class="org.jage.communication.LoopbackCommunicationService"/>
+
+    <component name="configurationService" class="org.jage.lifecycle.DefaultConfigurationService"/>
+
+    <component name="workplaceManager" class="org.jage.workplace.manager.DefaultWorkplaceManager">
+        <block name="workplaceManagerComponents">
+            <component name="defaultAgentAddressSupplier" class="org.jage.address.agent.DefaultAgentAddressSupplier"/>
+            <component name="comparator" class="org.jage.action.ordering.DefaultActionComparator" isSingleton="false"/>
+        </block>
+
+        <block name="workplaceComponents">
+            <component name="aggregateActionService" class="org.jage.agent.AggregateActionService" isSingleton="false"/>
+            <component name="aggregateQueryService" class="org.jage.agent.AggregateQueryService" isSingleton="false"/>
+            <component name="aggregateMessagingService" class="org.jage.agent.AggregateMessagingService"
+                       isSingleton="false"/>
+        </block>
+
+
+        <property name="workplaces">
+            <list>
+                <block name="workplaces"/>
+            </list>
+        </property>
+
+        <block name="stopCondition">
+            <component name="stopCondition" class="org.jage.workplace.FixedStepCountStopCondition">
+                <constructor-arg type="Long" value="50"/>
+            </component>
+        </block>
+    </component>
+</configuration>

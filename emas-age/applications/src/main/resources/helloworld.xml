@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration xmlns="http://age.iisg.agh.edu.pl/schema/age"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://age.iisg.agh.edu.pl/schema/age http://age.iisg.agh.edu.pl/schema/age/age.xsd">
+
+    <include file="classpath:base.xml">
+        <block name="workplaces">
+            <agent name="workplace" class="org.jage.workplace.IsolatedSimpleWorkplace">
+                <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
+                    <constructor-arg name="nameTemplate" value="TheXFiles"/>
+                </component>
+
+                <property name="agents">
+                    <list>
+                        <agent name="scully" class="org.intobl.HelloWorldSimpleAgent">
+                            <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
+                                <constructor-arg name="nameTemplate" value="Scully"/>
+                            </component>
+                        </agent>
+                        <agent name="mulder" class="org.intobl.HelloWorldSimpleAgent">
+                            <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
+                                <constructor-arg name="nameTemplate" value="Mulder"/>
+                            </component>
+                        </agent>
+                    </list>
+                </property>
+            </agent>
+        </block>
+    </include>
+</configuration>
