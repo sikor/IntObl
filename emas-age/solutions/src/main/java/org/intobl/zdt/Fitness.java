@@ -29,10 +29,10 @@ public class Fitness {
         for (int i = 0; i < getValues().size(); ++i) {
             Double thisVal = getValues().get(i);
             Double otherVal = other.getValues().get(i);
-            if (thisVal < otherVal) {
+            if (thisVal > otherVal) {
                 return false;
             }
-            if (thisVal > otherVal) {
+            if (thisVal < otherVal) {
                 isBetter = true;
             }
         }
@@ -45,5 +45,10 @@ public class Fitness {
             sum += d;
         }
         return sum;
+    }
+
+    @Override
+    public String toString() {
+        return values.toString();
     }
 }

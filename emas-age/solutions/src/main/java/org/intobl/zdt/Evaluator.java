@@ -18,6 +18,6 @@ public class Evaluator implements ISolutionEvaluator {
     public Double evaluate(ISolution iSolution) {
         ZdtSolution solution = (ZdtSolution) iSolution;
         problem.calculateFitness(solution);
-        return solution.getFitness().getSum();
+        return -solution.getFitness().getSum();
     }
 }

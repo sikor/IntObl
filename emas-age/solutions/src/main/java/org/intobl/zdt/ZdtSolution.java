@@ -16,4 +16,9 @@ public class ZdtSolution extends SolutionWithFitness implements IVectorSolution<
     public List<Double> getRepresentation() {
         return representation;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Fitness: %s\n representation: %s", getFitness(), representation.toString());
+    }
 }

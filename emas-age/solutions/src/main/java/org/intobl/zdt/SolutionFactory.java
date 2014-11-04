@@ -15,6 +15,9 @@ public class SolutionFactory implements ISolutionFactory {
     @Inject
     private INormalizedDoubleRandomGenerator rand;
 
+    @Inject
+    MultivariateProblem problem;
+
     @Override
     public ISolution createEmptySolution() {
         return createInitializedSolution();
@@ -26,6 +29,7 @@ public class SolutionFactory implements ISolutionFactory {
         for (int i = 0; i < 30; ++i) {
             solution.getRepresentation().add(rand.nextDouble());
         }
+        problem.calculateFitness(solution);
         return solution;
     }
 
@@ -36,6 +40,7 @@ public class SolutionFactory implements ISolutionFactory {
         for (int i = 0; i < solution.getRepresentation().size(); ++i) {
             newSolution.getRepresentation().add(solution.getRepresentation().get(i));
         }
+        problem.calculateFitness(newSolution);
         return newSolution;
     }
 }
