@@ -16,7 +16,7 @@ public class SolutionFactory implements ISolutionFactory {
     private INormalizedDoubleRandomGenerator rand;
 
     @Inject
-    MultivariateProblem problem;
+    Zdt1Problem problem;
 
     @Override
     public ISolution createEmptySolution() {
@@ -26,7 +26,7 @@ public class SolutionFactory implements ISolutionFactory {
     @Override
     public ISolution createInitializedSolution() {
         ZdtSolution solution = new ZdtSolution();
-        for (int i = 0; i < 30; ++i) {
+        for (int i = 0; i < problem.getN(); ++i) {
             solution.getRepresentation().add(rand.nextDouble());
         }
         problem.calculateFitness(solution);

@@ -20,4 +20,8 @@ public class Zdt1Problem implements MultivariateProblem {
         List<Double> fitness = ZdtHelpers.zdt1Fitness(representation);
         solution.getFitness().setValues(fitness);
     }
+
+    public int getN() {
+        return N;
+    }
 }
