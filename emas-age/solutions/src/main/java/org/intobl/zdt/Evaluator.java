@@ -9,7 +9,8 @@ import org.jage.solution.ISolution;
 public class Evaluator implements ISolutionEvaluator {
 
     @Override
-    public Object evaluate(ISolution iSolution) {
-        return null;
+    public Double evaluate(ISolution iSolution) {
+        ZdtSolution solution = (ZdtSolution) iSolution;
+        return solution.getFitness().getSum();
     }
 }

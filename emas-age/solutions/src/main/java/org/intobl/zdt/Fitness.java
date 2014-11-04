@@ -39,4 +39,11 @@ public class Fitness {
         return isBetter;
     }
 
+    public Double getSum() {
+        Double sum = 0d;
+        for (Double d : values) {
+            sum += d;
+        }
+        return sum;
+    }
 }
