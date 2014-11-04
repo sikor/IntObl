@@ -12,7 +12,7 @@ public class Evaluator implements ISolutionEvaluator {
 
 
     @Inject
-    IProblem problem;
+    MultivariateProblem problem;
 
     @Override
     public Double evaluate(ISolution iSolution) {

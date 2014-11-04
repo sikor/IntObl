@@ -104,7 +104,7 @@
             <!--</strategy>-->
 
             <strategy name="problem" class="org.intobl.zdt.Zdt1Problem">
-            <constructor-arg type="Integer" value="${problem.size}"/>
+                <constructor-arg type="Integer" value="${problem.size}"/>
             </strategy>
 
             <strategy name="solutionFactory" class="org.intobl.zdt.SolutionFactory"/>

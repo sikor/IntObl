@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by pawel on 04/11/14.
  */
-public class Zdt1Problem implements IProblem {
+public class Zdt1Problem implements MultivariateProblem {
 
     private final int N;
 

@@ -16,7 +16,7 @@ public class DominantBattle implements Battle<IndividualAgent> {
     private INormalizedDoubleRandomGenerator rand;
 
     @Inject
-    IProblem problem;
+    MultivariateProblem problem;
 
     @Override
     public IndividualAgent fight(IndividualAgent first, IndividualAgent second) {

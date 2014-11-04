@@ -2,7 +2,6 @@ package org.intobl.zdt;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
-import org.jage.problem.IProblem;
 import org.jage.solution.ISolution;
 import org.jage.variation.mutation.IMutateSolution;
 
@@ -19,7 +18,7 @@ public class Mutation implements IMutateSolution<ISolution> {
     private Zdt1Problem zdt1Problem;
 
     @Inject
-    public void setProblem(IProblem problem) {
+    public void setProblem(MultivariateProblem problem) {
         this.zdt1Problem = (Zdt1Problem) problem;
     }
 
