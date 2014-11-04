@@ -2,6 +2,7 @@ package org.intobl.zdt;
 
 import org.jage.solution.IVectorSolution;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,8 +10,10 @@ import java.util.List;
  */
 public class ZdtSolution extends SolutionWithFitness implements IVectorSolution<Double> {
 
+    private final List<Double> representation = new ArrayList<Double>();
+
     @Override
     public List<Double> getRepresentation() {
-        return null;
+        return representation;
     }
 }

@@ -15,10 +15,16 @@ public class DominantBattle implements Battle<IndividualAgent> {
     @Inject
     private INormalizedDoubleRandomGenerator rand;
 
+    @Inject
+    IProblem problem;
+
     @Override
     public IndividualAgent fight(IndividualAgent first, IndividualAgent second) {
         SolutionWithFitness firstSolution = (SolutionWithFitness) first.getSolution();
         SolutionWithFitness secondSolution = (SolutionWithFitness) second.getSolution();
+        problem.calculateFitness(firstSolution);
+        problem.calculateFitness(secondSolution);
+
         if (firstSolution.getFitness().dominates(secondSolution.getFitness())) {
             return first;
         }

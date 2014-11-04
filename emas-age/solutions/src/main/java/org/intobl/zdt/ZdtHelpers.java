@@ -11,8 +11,7 @@ public class ZdtHelpers {
     public static final int N = 30;
 
 
-    public static List<Double> zdt1Fitness(ZdtSolution solution) {
-        List<Double> representation = solution.getRepresentation();
+    public static List<Double> zdt1Fitness(List<Double> representation) {
         List<Double> result = new ArrayList<Double>(2);
 
         double f1 = representation.get(0);
@@ -22,7 +21,7 @@ public class ZdtHelpers {
             tailSum += representation.get(i);
         }
 
-        double g = 1 + (9 / (N - 1)) * tailSum;
+        double g = 1 + (9 / (representation.size() - 1)) * tailSum;
 
         double f2 = g * zdt1H(f1, g);
 
