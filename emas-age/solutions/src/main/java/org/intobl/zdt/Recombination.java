@@ -1,5 +1,6 @@
 package org.intobl.zdt;
 
+import org.jage.problem.IProblem;
 import org.jage.solution.ISolution;
 import org.jage.variation.recombination.IRecombine;
 
@@ -16,7 +17,7 @@ public class Recombination implements IRecombine<ISolution> {
     private Zdt1Problem zdt1Problem;
 
     @Inject
-    public void setProblem(org.jage.problem.IProblem problem) {
+    public void setProblem(IProblem problem) {
         this.zdt1Problem = (Zdt1Problem) problem;
     }
 
