@@ -3,6 +3,7 @@ package org.intobl.zdt;
 import org.jage.solution.ISolution;
 import org.jage.variation.recombination.IRecombine;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Random;
 
@@ -12,6 +13,12 @@ import java.util.Random;
 public class Recombination implements IRecombine<ISolution> {
 
     private Random random = new Random();
+    private Zdt1Problem zdt1Problem;
+
+    @Inject
+    public void setProblem(org.jage.problem.IProblem problem) {
+        this.zdt1Problem = (Zdt1Problem) problem;
+    }
 
     @Override
     public void recombine(ISolution first, ISolution second) {
@@ -32,5 +39,8 @@ public class Recombination implements IRecombine<ISolution> {
             firstZdtRepresentation.set(i, a);
             secondZdtRepresentation.set(i, b);
         }
+
+        zdt1Problem.calculateFitness(firstZdt);
+        zdt1Problem.calculateFitness(secondZdt);
     }
 }

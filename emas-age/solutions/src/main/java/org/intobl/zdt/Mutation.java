@@ -2,9 +2,11 @@ package org.intobl.zdt;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+import org.jage.problem.IProblem;
 import org.jage.solution.ISolution;
 import org.jage.variation.mutation.IMutateSolution;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Random;
 
@@ -13,6 +15,13 @@ import java.util.Random;
  */
 public class Mutation implements IMutateSolution<ISolution> {
     private Random random = new Random();
+
+    private Zdt1Problem zdt1Problem;
+
+    @Inject
+    public void setProblem(IProblem problem) {
+        this.zdt1Problem = (Zdt1Problem) problem;
+    }
 
     private Function<List<Double>, Void> swap = new Function<List<Double>, Void>() {
         public Void apply(List<Double> representation) {
@@ -53,5 +62,7 @@ public class Mutation implements IMutateSolution<ISolution> {
         for (int i = 0; i < 10; i++) {
             mutateFunctions.get(random.nextInt(representation.size()));
         }
+
+        zdt1Problem.calculateFitness(zdtSolution);
     }
 }
