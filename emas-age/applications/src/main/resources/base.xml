@@ -21,7 +21,6 @@
                        isSingleton="false"/>
         </block>
 
-
         <property name="workplaces">
             <list>
                 <block name="workplaces"/>
@@ -30,7 +29,7 @@
 
         <block name="stopCondition">
             <component name="stopCondition" class="org.jage.workplace.FixedStepCountStopCondition">
-                <constructor-arg type="Long" value="50"/>
+                <constructor-arg type="Long" value="1000"/>
             </component>
         </block>
     </component>

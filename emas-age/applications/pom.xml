@@ -15,7 +15,8 @@
     </parent>
 
     <properties>
-        <age.node.conf>classpath:helloworld.xml</age.node.conf>
+        <age.node.conf>classpath:emas.xml</age.node.conf>
+        <age.config.properties>classpath:emas.properties</age.config.properties>
     </properties>
 
     <dependencies>
@@ -31,6 +32,7 @@
             <artifactId>communication-hazelcast</artifactId>
             <version>${jage.version}</version>
         </dependency>
+
 
         <!-- Solution Module -->
         <dependency>
@@ -57,6 +59,7 @@
                 <configuration>
                     <mainClass>org.jage.platform.cli.CliNodeBootstrapper</mainClass>
                     <arguments>
+                        <argument>-Dage.config.properties=${age.config.properties}</argument>
                         <argument>-Dage.node.conf=${age.node.conf}</argument>
                     </arguments>
                 </configuration>

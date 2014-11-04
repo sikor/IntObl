@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration xmlns="http://age.iisg.agh.edu.pl/schema/age" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://age.iisg.agh.edu.pl/schema/age http://age.iisg.agh.edu.pl/schema/age/age.xsd">
+
+    <include file="classpath:base.xml">
+        <block name="workplaces">
+            <agent name="workplace" class="org.jage.workplace.IsolatedSimpleWorkplace">
+                <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
+                    <constructor-arg name="nameTemplate" value="workplace"/>
+                </component>
+
+                <component name="aggregateActionService" class="org.jage.agent.ActionDrivenAggregateActionService"
+                           isSingleton="false"/>
+
+                <agent name="island" class="org.jage.emas.agent.DefaultIslandAgent">
+                    <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
+                        <constructor-arg name="nameTemplate" value="island*"/>
+                    </component>
+
+                    <agent name="agent" class="org.jage.emas.agent.DefaultIndividualAgent">
+                        <component class="org.jage.address.agent.DefaultAgentAddressSupplier">
+                            <constructor-arg name="nameTemplate" value="individual*"/>
+                        </component>
+                        <strategy name="actionPreparator" class="org.jage.emas.action.individual.ActionPreparator">
+                            <list isSingleton="true">
+                                <strategy class="org.jage.emas.action.individual.EncounterActionContext"/>
+                                <strategy class="org.jage.emas.action.individual.MigrationActionContext"/>
+                                <strategy class="org.jage.emas.action.individual.DeathActionContext"/>
+                            </list>
+                        </strategy>
+                    </agent>
+
+                    <strategy name="encounterAction" class="org.jage.emas.action.individual.EncounterAction">
+                        <strategy name="reproductionPredicate" class="org.jage.emas.predicate.HighEnergyPredicate">
+                            <property name="threshold" type="Double" value="90"/>
+                        </strategy>
+                        <strategy name="sexualReproductionStrategy"
+                                  class="org.jage.emas.reproduction.DefaultSexualReproduction"/>
+                        <strategy name="asexualReproductionStrategy"
+                                  class="org.jage.emas.reproduction.DefaultAsexualReproduction"/>
+                        <strategy name="battleStrategy" class="org.jage.emas.battle.DeterministicFitnessBattle"/>
+                        <strategy name="battleEnergyTransfer" class="org.jage.emas.energy.ConstantEnergyTransfer">
+                            <property name="transferredEnergy" type="Double" value="20.0"/>
+                        </strategy>
+                    </strategy>
+                    <strategy name="migrationAction" class="org.jage.emas.action.individual.MigrationAction">
+                        <strategy name="migrationPredicate" class="org.jage.emas.predicate.RandomPredicate">
+                            <property name="probability" type="Double" value="${individual.chanceToMigrate}"/>
+                        </strategy>
+                        <strategy name="migrationStrategy" class="org.jage.emas.migration.RandomDestinationMigration"/>
+                    </strategy>
+                    <strategy name="deathAction" class="org.jage.emas.action.individual.DeathAction">
+                        <strategy name="deathPredicate" class="org.jage.emas.predicate.LowEnergyPredicate">
+                            <property name="threshold" type="Double" value="0"/>
+                        </strategy>
+                    </strategy>
+
+                    <property name="agents">
+                        <list>
+                            <multiple count="${islands.size}">
+                                <reference target="agent"/>
+                            </multiple>
+                        </list>
+                    </property>
+
+                    <!-- IslandAgents strategies -->
+                    <strategy name="actionPreparator" class="org.jage.emas.action.island.ActionPreparator">
+                        <strategy name="initializationActionCtx"
+                                  class="org.jage.emas.action.island.InitializationActionContext"/>
+                        <list isSingleton="true">
+                            <strategy class="org.jage.emas.util.SkippingActionContext"/>
+                            <strategy class="org.jage.emas.action.island.StatisticsUpdateActionContext"/>
+                        </list>
+                    </strategy>
+                </agent>
+
+                <property name="agents">
+                    <list>
+                        <multiple count="${islands.number}">
+                            <reference target="island"/>
+                        </multiple>
+                    </list>
+                </property>
+
+                <strategy name="initializationAction" class="org.jage.emas.action.island.InitializationAction">
+                    <property name="initialEnergy" type="Double" value="100"/>
+                </strategy>
+                <strategy name="skippingAction" class="org.jage.emas.util.SkippingAction"/>
+                <strategy name="statisticsUpdateAction" class="org.jage.emas.action.island.StatisticsUpdateAction">
+                    <property name="resolution" type="Integer" value="100"/>
+                </strategy>
+            </agent>
+        </block>
+        <block name="workplaceComponents" override="false">
+            <!-- Global Strategies -->
+            <strategy name="rand" class="org.jage.random.SimpleGenerator">
+                <constructor-arg type="Long" value="1234567890"/>
+            </strategy>
+
+            <strategy name="solutionEvaluator" class="org.jage.evaluation.realvalued.RastriginEvaluator"/>
+            <strategy name="problem" class="org.jage.problem.realvalued.RastriginProblem">
+                <constructor-arg type="Integer" value="${problem.size}"/>
+            </strategy>
+
+            <strategy name="solutionFactory" class="org.jage.solution.realvalued.RealValuedSolutionFactory"/>
+
+            <strategy name="recombinationStrategy"
+                      class="org.jage.variation.recombination.realvalued.OnePointRecombination"/>
+            <strategy name="mutationStategy" class="org.jage.variation.mutation.realvalued.NormalMicroMacroMutate">
+                <property name="chanceToMutate" type="Double" value="${feature.chanceToMutate}"/>
+                <property name="mutationRange" type="Double" value="${feature.mutationRange}"/>
+            </strategy>
+        </block>
+    </include>
+</configuration>

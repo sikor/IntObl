@@ -31,6 +31,19 @@
         </repository>
     </repositories>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.jage.algorithms</groupId>
+            <artifactId>emas</artifactId>
+            <version>${jage.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jage.algorithms</groupId>
+            <artifactId>real-valued</artifactId>
+            <version>${jage.version}</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <!-- java compiler set to JDK 1.6 -->
