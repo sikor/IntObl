@@ -9,6 +9,7 @@ import org.jage.emas.battle.Battle;
 public class DominantBattle implements Battle<IndividualAgent> {
     @Override
     public IndividualAgent fight(IndividualAgent first, IndividualAgent second) {
+        first.getSolution();
         return null;
     }
 }
