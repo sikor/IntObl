@@ -59,7 +59,7 @@ public class Mutation implements IMutateSolution<ISolution> {
         List<Double> representation = zdtSolution.getRepresentation();
 
         for (int i = 0; i < 10; i++) {
-            mutateFunctions.get(random.nextInt(representation.size()));
+            mutateFunctions.get(random.nextInt(mutateFunctions.size())).apply(representation);
         }
 
         zdt1Problem.calculateFitness(zdtSolution);
