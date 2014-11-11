@@ -8,7 +8,7 @@
 
     <component name="configurationService" class="org.jage.lifecycle.DefaultConfigurationService"/>
 
-    <component name="workplaceManager" class="org.jage.workplace.manager.DefaultWorkplaceManager">
+    <component name="workplaceManager" class="org.intobl.zdt.ZdtWorkplaceManager">
         <block name="workplaceManagerComponents">
             <component name="defaultAgentAddressSupplier" class="org.jage.address.agent.DefaultAgentAddressSupplier"/>
             <component name="comparator" class="org.jage.action.ordering.DefaultActionComparator" isSingleton="false"/>
