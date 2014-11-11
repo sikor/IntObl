@@ -59,7 +59,7 @@ public class ZdtWorkplaceManager extends DefaultWorkplaceManager {
     }
 
     private void plotToFile(XYDataset dataSet) {
-        JFreeChart chart = ChartFactory.createScatterPlot("ZDT", "x", "y", dataSet, PlotOrientation.HORIZONTAL, false, false, false);
+        JFreeChart chart = ChartFactory.createScatterPlot("ZDT", "x", "y", dataSet, PlotOrientation.VERTICAL, false, false, false);
         String timeNow = new SimpleDateFormat("yyyy_MM_dd_HH-mm-ss").format(new Date());
         try {
             ChartUtilities.saveChartAsJPEG(new File("emas_chart" + timeNow + ".jpg"), chart, 1000, 1000);

@@ -103,7 +103,7 @@
             <!--<constructor-arg type="Integer" value="${problem.size}"/>-->
             <!--</strategy>-->
 
-            <strategy name="problem" class="org.intobl.zdt.Zdt1Problem">
+            <strategy name="problem" class="org.intobl.zdt.Zdt3Problem">
                 <constructor-arg type="Integer" value="${problem.size}"/>
             </strategy>
 

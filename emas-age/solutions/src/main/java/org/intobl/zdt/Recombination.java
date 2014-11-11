@@ -13,11 +13,11 @@ import java.util.Random;
 public class Recombination implements IRecombine<ISolution> {
 
     private Random random = new Random();
-    private Zdt1Problem zdt1Problem;
+    private ZdtProblem zdt1Problem;
 
     @Inject
     public void setProblem(MultivariateProblem problem) {
-        this.zdt1Problem = (Zdt1Problem) problem;
+        this.zdt1Problem = (ZdtProblem) problem;
     }
 
     @Override

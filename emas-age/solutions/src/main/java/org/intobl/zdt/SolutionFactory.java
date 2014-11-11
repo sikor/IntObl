@@ -16,7 +16,7 @@ public class SolutionFactory implements ISolutionFactory {
     private INormalizedDoubleRandomGenerator rand;
 
     @Inject
-    Zdt1Problem problem;
+    ZdtProblem problem;
 
     @Override
     public ISolution createEmptySolution() {
