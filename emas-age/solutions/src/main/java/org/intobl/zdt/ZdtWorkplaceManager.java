@@ -14,6 +14,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.CategoryTableXYDataset;
 import org.jfree.data.xy.XYDataset;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -22,6 +23,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ZdtWorkplaceManager extends DefaultWorkplaceManager {
+
+
+    @Inject
+    ZdtProblem problem;
+
+
     @Override
     public void onWorkplaceStop(Workplace<? extends IAgent> workplace) {
         super.onWorkplaceStop(workplace);
@@ -42,6 +49,8 @@ public class ZdtWorkplaceManager extends DefaultWorkplaceManager {
             List<Double> values = solution.getFitness().getValues();
             dataSet.add(values.get(0), values.get(1), ".");
         }
+        problem.getSolution().addToDataSet(dataSet);
+
 
         return dataSet;
     }

@@ -22,4 +22,6 @@ public abstract class ZdtProblem implements MultivariateProblem {
     public int getN() {
         return N;
     }
+
+    public abstract SolutionsList getSolution();
 }
