@@ -116,5 +116,11 @@
                 <!--<property name="mutationRange" type="Double" value="${feature.mutationRange}"/>-->
             </strategy>
         </block>
+
+        <block name="stopCondition">
+            <component name="stopCondition" class="org.jage.workplace.FixedStepCountStopCondition">
+                <constructor-arg type="Long" value="${steps}"/>
+            </component>
+        </block>
     </include>
 </configuration>
