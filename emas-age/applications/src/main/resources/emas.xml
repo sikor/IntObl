@@ -91,6 +91,7 @@
                     <property name="resolution" type="Integer" value="100"/>
                 </strategy>
                 <strategy name="rememberCurrentSolution" class="org.intobl.zdt.RememberCurrentSolutionsAction">
+                    <property name="stepsNumber" type="Integer" value="${plot.steps}"/>
                 </strategy>
             </agent>
         </block>

@@ -22,11 +22,18 @@ public class RememberCurrentSolutionsAction extends ChainingAction<DefaultIsland
     ZdtProblem problem;
 
 
+    Integer stepsNumber;
+
+    public void setStepsNumber(Integer stepsNumber) {
+        this.stepsNumber = stepsNumber;
+    }
+
+
     @Override
     protected synchronized void doPerform(DefaultIslandAgent target) throws AgentException {
-        if (target.getStep() % 500 == 0 && target.getStep() > 0) {
+        if (target.getStep() % stepsNumber == 0) {
             List<IndividualAgent> individualAgents = target.getIndividualAgents();
-            int index = (int) (target.getStep() / 500) - 1;
+            int index = (int) (target.getStep() / stepsNumber);
             if (solutions.size() > index) {
                 CategoryTableXYDataset dataset = solutions.get(index);
                 PlotHelpers.insertToDataset(individualAgents, dataset);
