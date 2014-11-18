@@ -7,16 +7,10 @@ import org.jage.emas.agent.IndividualAgent;
 import org.jage.workplace.IsolatedSimpleWorkplace;
 import org.jage.workplace.Workplace;
 import org.jage.workplace.manager.DefaultWorkplaceManager;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.CategoryTableXYDataset;
 import org.jfree.data.xy.XYDataset;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -27,6 +21,11 @@ public class ZdtWorkplaceManager extends DefaultWorkplaceManager {
 
     @Inject
     ZdtProblem problem;
+    private static final String timeNow = new SimpleDateFormat("yyyy_MM_dd_HH-mm-ss").format(new Date());
+
+    public static String getTimeNow() {
+        return timeNow;
+    }
 
 
     @Override
@@ -39,19 +38,12 @@ public class ZdtWorkplaceManager extends DefaultWorkplaceManager {
     }
 
     private void plotSolution(LinkedList<IndividualAgent> agents) {
-        plotToFile(createPlotDataSet(agents));
+        PlotHelpers.plotToFile(createPlotDataSet(agents), "final");
     }
 
     private XYDataset createPlotDataSet(List<IndividualAgent> agents) {
-        CategoryTableXYDataset dataSet = new CategoryTableXYDataset();
-        for (IndividualAgent agent : agents) {
-            ZdtSolution solution = (ZdtSolution) agent.getSolution();
-            List<Double> values = solution.getFitness().getValues();
-            dataSet.add(values.get(0), values.get(1), ".");
-        }
+        CategoryTableXYDataset dataSet = PlotHelpers.getCategoryTableXYDataset(agents);
         problem.getSolution().addToDataSet(dataSet);
-
-
         return dataSet;
     }
 
@@ -65,16 +57,6 @@ public class ZdtWorkplaceManager extends DefaultWorkplaceManager {
             }
         }
         return individualAgents;
-    }
-
-    private void plotToFile(XYDataset dataSet) {
-        JFreeChart chart = ChartFactory.createScatterPlot("ZDT", "x", "y", dataSet, PlotOrientation.VERTICAL, false, false, false);
-        String timeNow = new SimpleDateFormat("yyyy_MM_dd_HH-mm-ss").format(new Date());
-        try {
-            ChartUtilities.saveChartAsJPEG(new File("emas_chart" + timeNow + ".jpg"), chart, 1000, 1000);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 }

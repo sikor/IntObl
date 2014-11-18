@@ -70,6 +70,7 @@
                         <list isSingleton="true">
                             <strategy class="org.jage.emas.util.SkippingActionContext"/>
                             <strategy class="org.jage.emas.action.island.StatisticsUpdateActionContext"/>
+                            <strategy class="org.intobl.zdt.RememberCurrentSolutionsActionContext"/>
                         </list>
                     </strategy>
                 </agent>
@@ -88,6 +89,8 @@
                 <strategy name="skippingAction" class="org.jage.emas.util.SkippingAction"/>
                 <strategy name="statisticsUpdateAction" class="org.jage.emas.action.island.StatisticsUpdateAction">
                     <property name="resolution" type="Integer" value="100"/>
+                </strategy>
+                <strategy name="rememberCurrentSolution" class="org.intobl.zdt.RememberCurrentSolutionsAction">
                 </strategy>
             </agent>
         </block>
