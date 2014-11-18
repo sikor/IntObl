@@ -16,10 +16,16 @@ public class Mutation implements IMutateSolution<ISolution> {
     private Random random = new Random();
 
     private ZdtProblem zdt1Problem;
+    private Integer mutationsNumber;
 
     @Inject
     public void setProblem(MultivariateProblem problem) {
         this.zdt1Problem = (ZdtProblem) problem;
+    }
+
+    @Inject
+    public void setMutationsNumber(Integer mutationsNumber) {
+        this.mutationsNumber = mutationsNumber;
     }
 
     private Function<List<Double>, Void> swap = new Function<List<Double>, Void>() {
@@ -58,7 +64,7 @@ public class Mutation implements IMutateSolution<ISolution> {
         ZdtSolution zdtSolution = (ZdtSolution) solution;
         List<Double> representation = zdtSolution.getRepresentation();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < mutationsNumber; i++) {
             mutateFunctions.get(random.nextInt(mutateFunctions.size())).apply(representation);
         }
 

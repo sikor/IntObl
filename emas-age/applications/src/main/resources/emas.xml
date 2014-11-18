@@ -115,8 +115,7 @@
             <strategy name="recombinationStrategy"
                       class="org.intobl.zdt.Recombination"/>
             <strategy name="mutationStategy" class="org.intobl.zdt.Mutation">
-                <!--<property name="chanceToMutate" type="Double" value="${feature.chanceToMutate}"/>-->
-                <!--<property name="mutationRange" type="Double" value="${feature.mutationRange}"/>-->
+                <property name="mutationsNumber" type="Integer" value="${feature.mutationNumber}"/>
             </strategy>
         </block>
 
