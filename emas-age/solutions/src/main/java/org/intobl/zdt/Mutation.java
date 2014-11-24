@@ -53,10 +53,16 @@ public class Mutation implements IMutateSolution<ISolution> {
             return null;
         }
     };
+
+    private Function<List<Double>, Void> identity = new Function<List<Double>, Void>() {
+        public Void apply(List<Double> representation) {
+            return null;
+        }
+    };
     ImmutableList<Function<List<Double>, Void>> mutateFunctions = ImmutableList.<Function<List<Double>, Void>>builder()
-            .add(mutateFirst)
             .add(mutateOne)
             .add(swap)
+            .add(identity)
             .build();
 
     @Override
@@ -65,7 +71,8 @@ public class Mutation implements IMutateSolution<ISolution> {
         List<Double> representation = zdtSolution.getRepresentation();
 
         for (int i = 0; i < mutationsNumber; i++) {
-            mutateFunctions.get(random.nextInt(mutateFunctions.size())).apply(representation);
+            if (random.nextBoolean())
+                mutateFunctions.get(random.nextInt(mutateFunctions.size())).apply(representation);
         }
 
         zdt1Problem.calculateFitness(zdtSolution);
