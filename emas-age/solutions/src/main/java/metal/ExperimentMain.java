@@ -19,13 +19,15 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package org.intobl.metal;
+package metal;
 
 import jmetal.core.Algorithm;
+import jmetal.core.Problem;
 import jmetal.experiments.Experiment;
 import jmetal.experiments.Settings;
 import jmetal.experiments.settings.NSGAII_Settings;
 import jmetal.experiments.util.Friedman;
+import jmetal.problems.ProblemFactory;
 import jmetal.util.JMException;
 
 import java.io.IOException;
@@ -52,7 +54,11 @@ public class ExperimentMain extends Experiment {
                                                Algorithm[] algorithm)
             throws ClassNotFoundException {
         try {
-            int numberOfAlgorithms = algorithmNameList_.length;
+            Object[] problemParams = {"Real"};
+            Problem problem_ = (new ProblemFactory()).getProblem(problemName, problemParams);
+            algorithm[algorithmNameList_.length - 1] = new ElmasAlgorithm(problem_);
+
+            int numberOfAlgorithms = algorithmNameList_.length - 1;
 
             HashMap[] parameters = new HashMap[numberOfAlgorithms];
 
@@ -67,8 +73,6 @@ public class ExperimentMain extends Experiment {
 
             parameters[0].put("crossoverProbability_", 1.0);
             parameters[1].put("crossoverProbability_", 0.9);
-            parameters[2].put("crossoverProbability_", 0.8);
-            parameters[3].put("crossoverProbability_", 0.7);
 
             if ((!paretoFrontFile_[problemIndex].equals("")) ||
                     (paretoFrontFile_[problemIndex] == null)) {
@@ -93,7 +97,7 @@ public class ExperimentMain extends Experiment {
 
         exp.experimentName_ = "NSGAIIStudy";
         exp.algorithmNameList_ = new String[]{
-                "NSGAIIa", "NSGAIIb", "NSGAIIc", "NSGAIId"};
+                "NSGAIIa", "NSGAIIb", "Elmas"};
         exp.problemList_ = new String[]{
                 "ZDT1", "ZDT2", "ZDT3"};
         exp.paretoFrontFile_ = new String[]{
@@ -108,7 +112,7 @@ public class ExperimentMain extends Experiment {
 
         exp.algorithmSettings_ = new Settings[numberOfAlgorithms];
 
-        exp.independentRuns_ = 5;
+        exp.independentRuns_ = 2;
 
         exp.initExperiment();
 

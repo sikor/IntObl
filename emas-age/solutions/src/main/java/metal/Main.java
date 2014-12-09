@@ -19,13 +19,12 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package org.intobl.metal;
+package metal;
 
 import jmetal.core.Algorithm;
 import jmetal.core.Operator;
 import jmetal.core.Problem;
 import jmetal.core.SolutionSet;
-import jmetal.metaheuristics.nsgaII.NSGAII;
 import jmetal.operators.crossover.CrossoverFactory;
 import jmetal.operators.mutation.MutationFactory;
 import jmetal.operators.selection.SelectionFactory;
@@ -57,7 +56,7 @@ public class Main {
     /**
      * @param args Command line arguments.
      * @throws JMException
-     * @throws IOException
+     * @throws java.io.IOException
      * @throws SecurityException Usage: three options
      *                           - jmetal.metaheuristics.nsgaII.NSGAII_main
      *                           - jmetal.metaheuristics.nsgaII.NSGAII_main problemName
@@ -87,7 +86,7 @@ public class Main {
         problem = new ZDT3("ArrayReal", 30);
         indicators = new QualityIndicator(problem, "/home/pawel/dev-projects/shared/IntObl/metal/resources/ZDT/ZDT3.pf");
 
-        algorithm = new NSGAII(problem);
+        algorithm = new ElmasAlgorithm(problem);
         //algorithm = new ssNSGAII(problem);
 
         // Algorithm parameters
@@ -136,9 +135,6 @@ public class Main {
             logger_.info("IGD        : " + indicators.getIGD(population));
             logger_.info("Spread     : " + indicators.getSpread(population));
             logger_.info("Epsilon    : " + indicators.getEpsilon(population));
-
-            int evaluations = ((Integer) algorithm.getOutputParameter("evaluations")).intValue();
-            logger_.info("Speed      : " + evaluations + " evaluations");
         } // if
     } //main
 } // NSGAII_main
