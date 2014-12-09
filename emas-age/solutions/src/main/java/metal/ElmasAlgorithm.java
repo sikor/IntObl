@@ -24,8 +24,8 @@ public class ElmasAlgorithm extends Algorithm {
     private Recombination recombination = new Recombination();
     private double migrationProb = 0.1;
     private int mutationNumber = 1;
-    private int iterationsNumber = 100;
-    private int initialAgentsNumber = 100;
+    private int iterationsNumber = 1000;
+    private int initialAgentsNumber = 300;
     private int islandsNumber = 5;
 
     private TreeSet<Integer> agentsToRemove = new TreeSet<Integer>();
@@ -56,7 +56,7 @@ public class ElmasAlgorithm extends Algorithm {
         for (int i = 0; i < islandsNumber; ++i) {
             ArrayList<IndividualAgent> individualAgents = new ArrayList<IndividualAgent>();
             islands.add(individualAgents);
-            for (int j = 0; i < initialAgentsNumber; ++i) {
+            for (int j = 0; j < initialAgentsNumber; ++j) {
                 IndividualAgent newAgent = new IndividualAgent(problem.getNumberOfVariables(), random, problem);
                 newAgent.changeEnergy(100);
                 individualAgents.add(newAgent);
@@ -65,7 +65,9 @@ public class ElmasAlgorithm extends Algorithm {
 
 
         for (int i = 0; i < iterationsNumber; ++i) {
+            int islandNum = 0;
             for (List<IndividualAgent> island : islands) {
+
                 agentsToRemove.clear();
                 agentsToAdd.clear();
 
@@ -79,6 +81,7 @@ public class ElmasAlgorithm extends Algorithm {
                     island.remove(toRemoveIndex);
                 }
                 island.addAll(agentsToAdd);
+                System.out.println("island num = " + islandNum++);
                 System.out.println("island size = " + island.size());
                 System.out.println("to add size = " + agentsToAdd.size());
                 System.out.println("to remove size = " + agentsToRemove.size());
@@ -154,6 +157,7 @@ public class ElmasAlgorithm extends Algorithm {
     }
 
     private void transferEnergy(IndividualAgent individualAgent, IndividualAgent child, int i) {
+        i = Math.min(individualAgent.energy(), i);
         individualAgent.changeEnergy(-i);
         child.changeEnergy(i);
     }

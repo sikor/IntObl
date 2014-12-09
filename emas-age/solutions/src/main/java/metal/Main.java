@@ -22,19 +22,14 @@
 package metal;
 
 import jmetal.core.Algorithm;
-import jmetal.core.Operator;
 import jmetal.core.Problem;
 import jmetal.core.SolutionSet;
-import jmetal.operators.crossover.CrossoverFactory;
-import jmetal.operators.mutation.MutationFactory;
-import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.ZDT.ZDT3;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
@@ -69,11 +64,6 @@ public class Main {
             ClassNotFoundException {
         Problem problem; // The problem to solve
         Algorithm algorithm; // The algorithm to use
-        Operator crossover; // Crossover operator
-        Operator mutation; // Mutation operator
-        Operator selection; // Selection operator
-
-        HashMap parameters; // Operator parameters
 
         QualityIndicator indicators; // Object to get quality indicators
 
@@ -84,37 +74,11 @@ public class Main {
 
         indicators = null;
         problem = new ZDT3("ArrayReal", 30);
-        indicators = new QualityIndicator(problem, "/home/pawel/dev-projects/shared/IntObl/metal/resources/ZDT/ZDT3.pf");
+        indicators = new QualityIndicator(problem, "emas-age/solutions/resources/ZDT/ZDT3.pf");
 
         algorithm = new ElmasAlgorithm(problem);
         //algorithm = new ssNSGAII(problem);
 
-        // Algorithm parameters
-        algorithm.setInputParameter("populationSize", 100);
-        algorithm.setInputParameter("maxEvaluations", 25000);
-
-        // Mutation and Crossover for Real codification
-        parameters = new HashMap();
-        parameters.put("probability", 0.9);
-        parameters.put("distributionIndex", 20.0);
-        crossover = CrossoverFactory.getCrossoverOperator("SBXCrossover", parameters);
-
-        parameters = new HashMap();
-        parameters.put("probability", 1.0 / problem.getNumberOfVariables());
-        parameters.put("distributionIndex", 20.0);
-        mutation = MutationFactory.getMutationOperator("PolynomialMutation", parameters);
-
-        // Selection Operator
-        parameters = null;
-        selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters);
-
-        // Add the operators to the algorithm
-        algorithm.addOperator("crossover", crossover);
-        algorithm.addOperator("mutation", mutation);
-        algorithm.addOperator("selection", selection);
-
-        // Add the indicator object to the algorithm
-        algorithm.setInputParameter("indicators", indicators);
 
         // Execute the Algorithm
         long initTime = System.currentTimeMillis();
@@ -122,11 +86,11 @@ public class Main {
         long estimatedTime = System.currentTimeMillis() - initTime;
 
         // Result messages
-        logger_.info("Total execution time: " + estimatedTime + "ms");
-        logger_.info("Variables values have been writen to file VAR");
-        population.printVariablesToFile("VAR");
-        logger_.info("Objectives values have been writen to file FUN");
-        population.printObjectivesToFile("FUN");
+//        logger_.info("Total execution time: " + estimatedTime + "ms");
+//        logger_.info("Variables values have been writen to file VAR");
+//        population.printVariablesToFile("VAR");
+//        logger_.info("Objectives values have been writen to file FUN");
+//        population.printObjectivesToFile("FUN");
 
         if (indicators != null) {
             logger_.info("Quality indicators");
