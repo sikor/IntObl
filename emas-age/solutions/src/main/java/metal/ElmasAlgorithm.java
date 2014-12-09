@@ -53,6 +53,7 @@ public class ElmasAlgorithm extends Algorithm {
         mutation.setMutationsNumber(mutationNumber);
 
 
+        //initialize agents
         for (int i = 0; i < islandsNumber; ++i) {
             ArrayList<IndividualAgent> individualAgents = new ArrayList<IndividualAgent>();
             islands.add(individualAgents);
@@ -64,6 +65,7 @@ public class ElmasAlgorithm extends Algorithm {
         }
 
 
+        //Agents meetings
         for (int i = 0; i < iterationsNumber; ++i) {
             int islandNum = 0;
             for (List<IndividualAgent> island : islands) {
@@ -77,7 +79,7 @@ public class ElmasAlgorithm extends Algorithm {
 
                 Iterator<Integer> integerIterator = agentsToRemove.descendingIterator();
                 while (integerIterator.hasNext()) {
-                    int toRemoveIndex = integerIterator.next().intValue();
+                    int toRemoveIndex = integerIterator.next(); //important unboxing
                     island.remove(toRemoveIndex);
                 }
                 island.addAll(agentsToAdd);
@@ -93,6 +95,7 @@ public class ElmasAlgorithm extends Algorithm {
         System.out.println("finished elmas. creating solution set.");
 
 
+        //write solution
         final SolutionSet solutionSet = new SolutionSet();
         solutionSet.setCapacity(Integer.MAX_VALUE);
         for (List<IndividualAgent> island : islands) {
