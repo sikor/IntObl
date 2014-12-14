@@ -1,5 +1,7 @@
 package metal;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import jmetal.core.Algorithm;
 import jmetal.core.Problem;
 import jmetal.core.Solution;
@@ -23,10 +25,12 @@ public class ElmasAlgorithm extends Algorithm {
     private Mutation mutation = new Mutation();
     private Recombination recombination = new Recombination();
     private double migrationProb = 0.1;
-    private int mutationNumber = 1;
-    private int iterationsNumber = 1000;
+    private int mutationNumber = 2;
+    private int iterationsNumber = 500;
     private int initialAgentsNumber = 300;
-    private int islandsNumber = 5;
+    private int islandsNumber = 10;
+
+    private int plottingFrequency = 10;
 
     private TreeSet<Integer> agentsToRemove = new TreeSet<Integer>();
     private Set<IndividualAgent> agentsToAdd = new HashSet<IndividualAgent>();
@@ -89,6 +93,7 @@ public class ElmasAlgorithm extends Algorithm {
                 System.out.println("to remove size = " + agentsToRemove.size());
             }
             System.out.println("iteration = " + i);
+            plot(i);
 
         }
 
@@ -108,6 +113,12 @@ public class ElmasAlgorithm extends Algorithm {
 
 
         return solutionSet;
+    }
+
+    private void plot(int iteration) {
+        if (iteration % plottingFrequency == 0) {
+            new SolutionPlotter(getCurrentSolutions(), "iter-" + iteration).plot();
+        }
     }
 
     public void encounterAction(List<IndividualAgent> island, int agentIndex) {
@@ -211,5 +222,19 @@ public class ElmasAlgorithm extends Algorithm {
         return child;
     }
 
-
+    private Iterable<Solution> getCurrentSolutions() {
+        Iterable<IndividualAgent> allAgents = Iterables.concat(islands);
+        return Iterables.transform(allAgents, new Function<IndividualAgent, Solution>() {
+            @Override
+            public Solution apply(IndividualAgent individualAgent) {
+                Solution solution = new Solution(problem, individualAgent.getWrappedArrayReal());
+                try {
+                    problem.evaluate(solution);
+                } catch (JMException e) {
+                    throw new RuntimeException(e);
+                }
+                return solution;
+            }
+        });
+    }
 }

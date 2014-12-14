@@ -85,6 +85,7 @@ public class Main {
         SolutionSet population = algorithm.execute();
         long estimatedTime = System.currentTimeMillis() - initTime;
 
+        new SolutionPlotter(population.iterator(), "final").plot();
         // Result messages
 //        logger_.info("Total execution time: " + estimatedTime + "ms");
 //        logger_.info("Variables values have been writen to file VAR");
