@@ -16,6 +16,8 @@ public class IndividualAgent {
     private ArrayReal arrayReal;
     private int energy = 0;
 
+    private int congestedNeighbors = 0;
+
     public IndividualAgent(ArrayReal copy) {
         arrayReal = copy;
         variables = arrayReal.array_;
@@ -49,5 +51,13 @@ public class IndividualAgent {
 
     public ArrayReal getArrayReal() {
         return arrayReal;
+    }
+
+    public int getCongestedNeighbors() {
+        return congestedNeighbors;
+    }
+
+    public void addCongestedNeighbor() {
+        congestedNeighbors++;
     }
 }

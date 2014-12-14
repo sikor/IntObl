@@ -16,19 +16,24 @@ import java.util.*;
  */
 public class ElmasAlgorithm extends Algorithm {
 
-    public static final int BATTLE_TRANSFER_ENERGY = 30;
+    public static final int BATTLE_TRANSFER_ENERGY = 20;
     public static final int REPRODUCTION_PREDICATE = 90;
-    public static final int CHILD_TRANSFER_ENERGY = 50;
+    public static final int CHILD_TRANSFER_ENERGY = 10;
     public static final int MIGRATION_PENALTY = -1;
     public static final int DEAD_PREDICATE = 0;
+    public static final int ELITISM_PREDICATE = 110;
+    private static final int START_ENERGY = 45;
+    private static final double CONGESTION_LIMIT = 0.04;
+    private static final int CONGESTED_NEIGHBORS_LIMIT = 10;
+
     private Problem problem;
     private Mutation mutation = new Mutation();
     private Recombination recombination = new Recombination();
     private double migrationProb = 0.1;
     private int mutationNumber = 2;
     private int iterationsNumber = 500;
-    private int initialAgentsNumber = 300;
-    private int islandsNumber = 10;
+    private int initialAgentsNumber = 200;
+    private int islandsNumber = 8;
 
     private int plottingFrequency = 10;
 
@@ -46,12 +51,12 @@ public class ElmasAlgorithm extends Algorithm {
 
 
     private List<List<IndividualAgent>> islands = new ArrayList<List<IndividualAgent>>();
+    private List<IndividualAgent> eliteIsland = new LinkedList<IndividualAgent>();
+
     Random random = new Random();
 
     @Override
     public SolutionSet execute() throws JMException, ClassNotFoundException {
-
-        Random random = new Random();
 
         problem = getProblem();
         mutation.setMutationsNumber(mutationNumber);
@@ -62,14 +67,13 @@ public class ElmasAlgorithm extends Algorithm {
             ArrayList<IndividualAgent> individualAgents = new ArrayList<IndividualAgent>();
             islands.add(individualAgents);
             for (int j = 0; j < initialAgentsNumber; ++j) {
-                IndividualAgent newAgent = new IndividualAgent(problem.getNumberOfVariables(), random, problem);
-                newAgent.changeEnergy(100);
-                individualAgents.add(newAgent);
+                individualAgents.add(createRandomAgent());
             }
         }
 
 
         //Agents meetings
+        System.out.println(">>>>> BEFORE: " + Iterables.size(Iterables.concat(islands)));
         for (int i = 0; i < iterationsNumber; ++i) {
             int islandNum = 0;
             for (List<IndividualAgent> island : islands) {
@@ -77,7 +81,8 @@ public class ElmasAlgorithm extends Algorithm {
                 agentsToRemove.clear();
                 agentsToAdd.clear();
 
-                for (int agent = 0; agent < island.size(); ++agent) {
+                int size = island.size();
+                for (int agent = 0; agent < size; ++agent) {
                     encounterAction(island, agent);
                 }
 
@@ -86,7 +91,9 @@ public class ElmasAlgorithm extends Algorithm {
                     int toRemoveIndex = integerIterator.next(); //important unboxing
                     island.remove(toRemoveIndex);
                 }
+                migrateEliteAgents(island);
                 island.addAll(agentsToAdd);
+                mutateCongestedAgents(island);
                 System.out.println("island num = " + islandNum++);
                 System.out.println("island size = " + island.size());
                 System.out.println("to add size = " + agentsToAdd.size());
@@ -98,12 +105,15 @@ public class ElmasAlgorithm extends Algorithm {
         }
 
         System.out.println("finished elmas. creating solution set.");
+        System.out.println(">>>>> AFTER: " + Iterables.size(Iterables.concat(islands)));
+        System.out.println(">>>>> ELITE: " + eliteIsland.size());
 
 
         //write solution
         final SolutionSet solutionSet = new SolutionSet();
         solutionSet.setCapacity(Integer.MAX_VALUE);
-        for (List<IndividualAgent> island : islands) {
+
+        for (List<IndividualAgent> island : getAllIslands()) {
             for (final IndividualAgent agent : island) {
                 final Solution solution = new Solution(problem, agent.getWrappedArrayReal());
                 problem.evaluate(solution);
@@ -113,6 +123,44 @@ public class ElmasAlgorithm extends Algorithm {
 
 
         return solutionSet;
+    }
+
+    private void mutateCongestedAgents(List<IndividualAgent> island) {
+        for (IndividualAgent agent : island) {
+            if (agent.getCongestedNeighbors() > CONGESTED_NEIGHBORS_LIMIT) {
+                mutation.mutateSolution(agent.getArrayReal().array_);
+            }
+        }
+    }
+
+    protected IndividualAgent createRandomAgent() throws JMException {
+        IndividualAgent newAgent = new IndividualAgent(problem.getNumberOfVariables(), random, problem);
+        newAgent.changeEnergy(70);
+        return newAgent;
+    }
+
+    private List<List<IndividualAgent>> getAllIslands() {
+        List<List<IndividualAgent>> allIslands = new LinkedList<List<IndividualAgent>>();
+        allIslands.addAll(islands);
+        allIslands.add(eliteIsland);
+        return allIslands;
+    }
+
+    private void migrateEliteAgents(List<IndividualAgent> island) throws JMException {
+        Iterator<IndividualAgent> agentIterator = island.iterator();
+        int removedEliteAgents = 0;
+        while (agentIterator.hasNext()) {
+            IndividualAgent eliteAgent = agentIterator.next();
+            if (eliteAgent.energy() > ELITISM_PREDICATE &&
+                    eliteAgent.getCongestedNeighbors() > CONGESTED_NEIGHBORS_LIMIT) {
+                agentIterator.remove();
+                eliteIsland.add(eliteAgent);
+                removedEliteAgents++;
+            }
+        }
+        /*for (int i = 0; i < removedEliteAgents; i++) {
+            island.add(createRandomAgent());
+        }*/
     }
 
     private void plot(int iteration) {
@@ -136,6 +184,7 @@ public class ElmasAlgorithm extends Algorithm {
                     otherIndex = (otherIndex + 1) % island.size();
                 }
                 IndividualAgent other = island.get(otherIndex);
+                updateCongestionInfo(agent, other);
 
 
                 if (reproductionPredicate(other) && reproductionPredicate(agent)) {
@@ -158,10 +207,22 @@ public class ElmasAlgorithm extends Algorithm {
 
     }
 
+    private void updateCongestionInfo(IndividualAgent agent1, IndividualAgent agent2) throws JMException {
+        Solution solution1 = new Solution(problem, agent1.getWrappedArrayReal());
+        Solution solution2 = new Solution(problem, agent2.getWrappedArrayReal());
+        problem.evaluate(solution1);
+        problem.evaluate(solution2);
+        if (areCongested(solution1, solution2)) {
+            agent1.addCongestedNeighbor();
+            agent2.addCongestedNeighbor();
+        }
+    }
+
     private IndividualAgent selfReproduction(IndividualAgent individualAgent) {
         ArrayReal copy = copyArrayReal(individualAgent);
         mutation.mutateSolution(copy.array_);
         IndividualAgent child = new IndividualAgent(copy);
+        child.changeEnergy(START_ENERGY);
         transferEnergy(individualAgent, child, CHILD_TRANSFER_ENERGY);
         return child;
     }
@@ -216,6 +277,7 @@ public class ElmasAlgorithm extends Algorithm {
         Double[] copy1 = copiedAgent1.array_;
         Double[] copy3 = copyArrayReal(other).array_;
         recombination.recombine(copy1, copy3);
+        mutation.mutateSolution(copiedAgent1.array_);
         IndividualAgent child = new IndividualAgent(copiedAgent1);
         transferEnergy(individualAgent, child, CHILD_TRANSFER_ENERGY);
         transferEnergy(other, child, CHILD_TRANSFER_ENERGY);
@@ -236,5 +298,12 @@ public class ElmasAlgorithm extends Algorithm {
                 return solution;
             }
         });
+    }
+
+    private boolean areCongested(Solution solution1, Solution solution2) {
+        double objective1diff = Math.abs(solution1.getObjective(1) - solution2.getObjective(1));
+        double objective0diff = Math.abs(solution1.getObjective(0) - solution2.getObjective(0));
+        return objective0diff < CONGESTION_LIMIT
+                && objective1diff < CONGESTION_LIMIT;
     }
 }
