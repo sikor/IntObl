@@ -74,7 +74,7 @@ public class Main {
         logger_.addHandler(fileHandler_);
 
         indicators = null;
-        problem = new ZDT1("ArrayReal", 30);
+        problem = new ZDT3("ArrayReal", 30);
         indicators = new QualityIndicator(problem, "emas-age/solutions/resources/ZDT/ZDT3.pf");
 
         algorithm = new ElmasAlgorithm(problem);

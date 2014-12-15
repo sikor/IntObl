@@ -18,24 +18,25 @@ public class ElmasAlgorithm extends Algorithm {
 
     public static final int BATTLE_TRANSFER_ENERGY = 20;
     public static final int REPRODUCTION_PREDICATE = 90;
-    public static final int CHILD_TRANSFER_ENERGY = 10;
+    public static final int CHILD_TRANSFER_ENERGY = 20;
     public static final int MIGRATION_PENALTY = -1;
     public static final int DEAD_PREDICATE = 0;
-    public static final int ELITISM_PREDICATE = 110;
-    private static final int START_ENERGY = 45;
-    private static final double CONGESTION_LIMIT = 0.04;
+    public static final int ELITISM_PREDICATE = 100;
+    private static final int START_ENERGY = 0;
+    private static final double CONGESTION_LIMIT_X = 0.1;
+    private static final double CONGESTION_LIMIT_Y = 0.01;
     private static final int CONGESTED_NEIGHBORS_LIMIT = 10;
 
     private Problem problem;
     private Mutation mutation = new Mutation();
     private Recombination recombination = new Recombination();
-    private double migrationProb = 0.1;
-    private int mutationNumber = 2;
-    private int iterationsNumber = 500;
-    private int initialAgentsNumber = 200;
-    private int islandsNumber = 8;
+    private double migrationProb = 0.05;
+    private int mutationNumber = 3;
+    private int iterationsNumber = 2000;
+    private int initialAgentsNumber = 3000;
+    private int islandsNumber = 16;
 
-    private int plottingFrequency = 10;
+    private int plottingFrequency = 50;
 
     private TreeSet<Integer> agentsToRemove = new TreeSet<Integer>();
     private Set<IndividualAgent> agentsToAdd = new HashSet<IndividualAgent>();
@@ -303,7 +304,7 @@ public class ElmasAlgorithm extends Algorithm {
     private boolean areCongested(Solution solution1, Solution solution2) {
         double objective1diff = Math.abs(solution1.getObjective(1) - solution2.getObjective(1));
         double objective0diff = Math.abs(solution1.getObjective(0) - solution2.getObjective(0));
-        return objective0diff < CONGESTION_LIMIT
-                && objective1diff < CONGESTION_LIMIT;
+        return objective0diff < CONGESTION_LIMIT_X
+                && objective1diff < CONGESTION_LIMIT_Y;
     }
 }
