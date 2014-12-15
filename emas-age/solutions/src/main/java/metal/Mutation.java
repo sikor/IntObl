@@ -39,7 +39,7 @@ public class Mutation {
     private Function<Double[], Void> decreaseAll = new Function<Double[], Void>() {
         public Void apply(Double[] representation) {
             for (int i = 0; i < representation.length; i++) {
-                representation[i] -= 0.01;
+                representation[i] -= 0.05;
             }
             return null;
         }
@@ -74,10 +74,22 @@ public class Mutation {
             .build();
 
 
+    private void clearInvalidData(Double[] solution) {
+        for (int i = 0; i < solution.length; i++) {
+            if (solution[i] > 1.0) {
+                solution[i] = 1.0;
+            } else if (solution[i] < 0.0) {
+                solution[i] = 0.0;
+            }
+        }
+    }
+
     public void mutateSolution(Double[] solution) {
         for (int i = 0; i < mutationsNumber; i++) {
             if (random.nextBoolean())
                 mutateFunctions.get(random.nextInt(mutateFunctions.size())).apply(solution);
         }
+
+        clearInvalidData(solution);
     }
 }
