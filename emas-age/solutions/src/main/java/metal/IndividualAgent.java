@@ -17,6 +17,7 @@ public class IndividualAgent {
     private int energy = 0;
 
     private int congestedNeighbors = 0;
+    private boolean elite;
 
     public IndividualAgent(ArrayReal copy) {
         arrayReal = copy;
@@ -59,5 +60,17 @@ public class IndividualAgent {
 
     public void addCongestedNeighbor() {
         congestedNeighbors++;
+    }
+
+    public void clearCongestedNeighbors() {
+        congestedNeighbors = 0;
+    }
+
+    public boolean isElite() {
+        return elite;
+    }
+
+    public void setElite(boolean elite) {
+        this.elite = elite;
     }
 }

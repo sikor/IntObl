@@ -13,6 +13,25 @@ public class Recombination {
 
 
     public void recombine(Double[] first, Double[] second) throws JMException {
+        if (random.nextBoolean()) {
+            mixAllValues(first, second);
+        } else {
+            mixParts(first, second);
+        }
+    }
+
+    protected void mixParts(Double[] first, Double[] second) {
+        if (random.nextBoolean()) {
+            first[0] = second[0];
+        }
+        if (random.nextBoolean()) {
+            for (int i = 1; i < first.length; i++) {
+                first[i] = second[i];
+            }
+        }
+    }
+
+    protected void mixAllValues(Double[] first, Double[] second) {
         for (int i = 0; i < first.length; i++) {
             double a, b;
             if (random.nextBoolean()) {
@@ -26,4 +45,5 @@ public class Recombination {
             second[i] = b;
         }
     }
+
 }

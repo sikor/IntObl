@@ -16,25 +16,28 @@ import java.util.*;
  */
 public class ElmasAlgorithm extends Algorithm {
 
-    public static final int BATTLE_TRANSFER_ENERGY = 20;
+    private static final boolean VERBOSE = false;
+
+    public static final int BATTLE_TRANSFER_ENERGY = 30;
     public static final int REPRODUCTION_PREDICATE = 90;
-    public static final int CHILD_TRANSFER_ENERGY = 20;
+    public static final int CHILD_TRANSFER_ENERGY = 30;
     public static final int MIGRATION_PENALTY = -1;
     public static final int DEAD_PREDICATE = 0;
     public static final int ELITISM_PREDICATE = 100;
     private static final int START_ENERGY = 0;
-    private static final double CONGESTION_LIMIT_X = 0.1;
-    private static final double CONGESTION_LIMIT_Y = 0.01;
-    private static final int CONGESTED_NEIGHBORS_LIMIT = 10;
+    private static final double CONGESTION_LIMIT_X = 0.05; // 0.05?
+    private static final double CONGESTION_LIMIT_Y = 0.02;
+    private static final int CONGESTED_NEIGHBORS_LIMIT = 7;
 
     private Problem problem;
     private Mutation mutation = new Mutation();
     private Recombination recombination = new Recombination();
     private double migrationProb = 0.05;
-    private int mutationNumber = 3;
+    private int mutationNumber = 1;
     private int iterationsNumber = 2000;
-    private int initialAgentsNumber = 3000;
+    private int initialAgentsNumber = 600;
     private int islandsNumber = 16;
+    private int eliteIslandsNumber = 3;
 
     private int plottingFrequency = 50;
 
@@ -52,7 +55,7 @@ public class ElmasAlgorithm extends Algorithm {
 
 
     private List<List<IndividualAgent>> islands = new ArrayList<List<IndividualAgent>>();
-    private List<IndividualAgent> eliteIsland = new LinkedList<IndividualAgent>();
+    private List<List<IndividualAgent>> eliteIslands = new ArrayList<List<IndividualAgent>>();
 
     Random random = new Random();
 
@@ -71,6 +74,9 @@ public class ElmasAlgorithm extends Algorithm {
                 individualAgents.add(createRandomAgent());
             }
         }
+        for (int i = 0; i < eliteIslandsNumber; ++i) {
+            eliteIslands.add(new LinkedList<IndividualAgent>());
+        }
 
 
         //Agents meetings
@@ -79,26 +85,10 @@ public class ElmasAlgorithm extends Algorithm {
             int islandNum = 0;
             for (List<IndividualAgent> island : islands) {
 
-                agentsToRemove.clear();
-                agentsToAdd.clear();
-
-                int size = island.size();
-                for (int agent = 0; agent < size; ++agent) {
-                    encounterAction(island, agent);
-                }
-
-                Iterator<Integer> integerIterator = agentsToRemove.descendingIterator();
-                while (integerIterator.hasNext()) {
-                    int toRemoveIndex = integerIterator.next(); //important unboxing
-                    island.remove(toRemoveIndex);
-                }
-                migrateEliteAgents(island);
-                island.addAll(agentsToAdd);
-                mutateCongestedAgents(island);
-                System.out.println("island num = " + islandNum++);
-                System.out.println("island size = " + island.size());
-                System.out.println("to add size = " + agentsToAdd.size());
-                System.out.println("to remove size = " + agentsToRemove.size());
+                runMeetingsOnIsland(new Integer(islandNum++).toString(), island, false);
+            }
+            for (List<IndividualAgent> eliteIsland : eliteIslands) {
+                runMeetingsOnIsland("elite" + islandNum++, eliteIsland, true);
             }
             System.out.println("iteration = " + i);
             plot(i);
@@ -107,7 +97,7 @@ public class ElmasAlgorithm extends Algorithm {
 
         System.out.println("finished elmas. creating solution set.");
         System.out.println(">>>>> AFTER: " + Iterables.size(Iterables.concat(islands)));
-        System.out.println(">>>>> ELITE: " + eliteIsland.size());
+        System.out.println(">>>>> ELITE: " + Iterables.size(Iterables.concat(eliteIslands)));
 
 
         //write solution
@@ -124,6 +114,34 @@ public class ElmasAlgorithm extends Algorithm {
 
 
         return solutionSet;
+    }
+
+    protected void runMeetingsOnIsland(String islandId, List<IndividualAgent> island, boolean isElite) throws JMException {
+        agentsToRemove.clear();
+        agentsToAdd.clear();
+
+        int size = island.size();
+        for (int agent = 0; agent < size; ++agent) {
+            encounterAction(island, agent);
+        }
+
+        Iterator<Integer> integerIterator = agentsToRemove.descendingIterator();
+        while (integerIterator.hasNext()) {
+            int toRemoveIndex = integerIterator.next(); //important unboxing
+            island.remove(toRemoveIndex);
+        }
+
+        if (!isElite) {
+            migrateEliteAgents(island);
+        }
+        island.addAll(agentsToAdd);
+        //mutateCongestedAgents(island);
+        if (VERBOSE) {
+            System.out.println("island num = " + islandId);
+            System.out.println("island size = " + island.size());
+            System.out.println("to add size = " + agentsToAdd.size());
+            System.out.println("to remove size = " + agentsToRemove.size());
+        }
     }
 
     private void mutateCongestedAgents(List<IndividualAgent> island) {
@@ -143,30 +161,31 @@ public class ElmasAlgorithm extends Algorithm {
     private List<List<IndividualAgent>> getAllIslands() {
         List<List<IndividualAgent>> allIslands = new LinkedList<List<IndividualAgent>>();
         allIslands.addAll(islands);
-        allIslands.add(eliteIsland);
+        allIslands.addAll(eliteIslands);
         return allIslands;
     }
 
     private void migrateEliteAgents(List<IndividualAgent> island) throws JMException {
         Iterator<IndividualAgent> agentIterator = island.iterator();
-        int removedEliteAgents = 0;
         while (agentIterator.hasNext()) {
             IndividualAgent eliteAgent = agentIterator.next();
             if (eliteAgent.energy() > ELITISM_PREDICATE &&
                     eliteAgent.getCongestedNeighbors() > CONGESTED_NEIGHBORS_LIMIT) {
                 agentIterator.remove();
-                eliteIsland.add(eliteAgent);
-                removedEliteAgents++;
+                eliteAgent.setElite(true);
+                eliteAgent.clearCongestedNeighbors();
+                eliteIslands.get(random.nextInt(eliteIslands.size())).add(eliteAgent);
             }
         }
-        /*for (int i = 0; i < removedEliteAgents; i++) {
-            island.add(createRandomAgent());
-        }*/
     }
 
     private void plot(int iteration) {
         if (iteration % plottingFrequency == 0) {
-            new SolutionPlotter(getCurrentSolutions(), "iter-" + iteration).plot();
+            new SolutionPlotter(getCurrentSolutions(islands), "iter-" + iteration).plot();
+            Iterable<Solution> eliteSolutions = getCurrentSolutions(eliteIslands);
+            if (!Iterables.isEmpty(eliteSolutions)) {
+                new SolutionPlotter(eliteSolutions, "elite-" + iteration).plot();
+            }
         }
     }
 
@@ -200,12 +219,20 @@ public class ElmasAlgorithm extends Algorithm {
             if (random.nextDouble() < migrationProb) {
                 agent.changeEnergy(MIGRATION_PENALTY);
                 agentsToRemove.add(agentIndex);
-                islands.get(random.nextInt(islands.size())).add(agent);
+                List<List<IndividualAgent>> islandsGroup = getIslands(agent.isElite());
+                islandsGroup.get(random.nextInt(islandsGroup.size())).add(agent);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+    }
+
+    private List<List<IndividualAgent>> getIslands(boolean isElite) {
+        if (isElite)
+            return eliteIslands;
+        else
+            return islands;
     }
 
     private void updateCongestionInfo(IndividualAgent agent1, IndividualAgent agent2) throws JMException {
@@ -285,8 +312,8 @@ public class ElmasAlgorithm extends Algorithm {
         return child;
     }
 
-    private Iterable<Solution> getCurrentSolutions() {
-        Iterable<IndividualAgent> allAgents = Iterables.concat(islands);
+    private Iterable<Solution> getCurrentSolutions(List<List<IndividualAgent>> islandsGroup) {
+        Iterable<IndividualAgent> allAgents = Iterables.concat(islandsGroup);
         return Iterables.transform(allAgents, new Function<IndividualAgent, Solution>() {
             @Override
             public Solution apply(IndividualAgent individualAgent) {

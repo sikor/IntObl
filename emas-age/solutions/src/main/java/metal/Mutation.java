@@ -36,6 +36,15 @@ public class Mutation {
         }
     };
 
+    private Function<Double[], Void> decreaseAll = new Function<Double[], Void>() {
+        public Void apply(Double[] representation) {
+            for (int i = 0; i < representation.length; i++) {
+                representation[i] -= 0.01;
+            }
+            return null;
+        }
+    };
+
     private Function<Double[], Void> mutateFirst = new Function<Double[], Void>() {
         public Void apply(Double[] representation) {
             representation[0] = random.nextDouble();
@@ -56,6 +65,9 @@ public class Mutation {
         }
     };
     ImmutableList<Function<Double[], Void>> mutateFunctions = ImmutableList.<Function<Double[], Void>>builder()
+            .add(mutateFirst)
+            .add(mutateFirst)
+            .add(decreaseAll)
             .add(mutateOne)
             .add(swap)
             .add(identity)
