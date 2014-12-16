@@ -68,8 +68,8 @@ public class Mutation {
             .add(mutateFirst)
             .add(mutateFirst)
             .add(decreaseAll)
-            .add(mutateOne)
-            .add(swap)
+//            .add(mutateOne)
+//            .add(swap)
             .add(identity)
             .build();
 

@@ -24,7 +24,7 @@ package metal;
 import jmetal.core.Algorithm;
 import jmetal.core.Problem;
 import jmetal.core.SolutionSet;
-import jmetal.problems.ZDT.ZDT1;
+import jmetal.metaheuristics.nsgaII.ssNSGAII;
 import jmetal.problems.ZDT.ZDT3;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Configuration;
@@ -53,10 +53,10 @@ public class Main {
      * @param args Command line arguments.
      * @throws JMException
      * @throws java.io.IOException
-     * @throws SecurityException Usage: three options
-     *                           - jmetal.metaheuristics.nsgaII.NSGAII_main
-     *                           - jmetal.metaheuristics.nsgaII.NSGAII_main problemName
-     *                           - jmetal.metaheuristics.nsgaII.NSGAII_main problemName paretoFrontFile
+     * @throws SecurityException   Usage: three options
+     *                             - jmetal.metaheuristics.nsgaII.NSGAII_main
+     *                             - jmetal.metaheuristics.nsgaII.NSGAII_main problemName
+     *                             - jmetal.metaheuristics.nsgaII.NSGAII_main problemName paretoFrontFile
      */
     public static void main(String[] args) throws
             JMException,
@@ -78,7 +78,7 @@ public class Main {
         indicators = new QualityIndicator(problem, "emas-age/solutions/resources/ZDT/ZDT3.pf");
 
         algorithm = new ElmasAlgorithm(problem);
-        //algorithm = new ssNSGAII(problem);
+        Algorithm algorithm2 = new ssNSGAII(problem);
 
 
         // Execute the Algorithm

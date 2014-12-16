@@ -7,6 +7,10 @@ import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 import jmetal.encodings.variable.ArrayReal;
+import jmetal.operators.crossover.CrossoverFactory;
+import jmetal.operators.crossover.SBXCrossover;
+import jmetal.operators.mutation.MutationFactory;
+import jmetal.operators.mutation.PolynomialMutation;
 import jmetal.util.JMException;
 
 import java.util.*;
@@ -28,8 +32,8 @@ public class ElmasAlgorithm extends Algorithm {
     public static final int MIGRATION_PREDICATE = 20;
     public static final int DEAD_PREDICATE = 0;
     public static final int ELITISM_PREDICATE = 130;
-    private static final double CONGESTION_LIMIT_X = 0.05; // 0.05?
-    private static final double CONGESTION_LIMIT_Y = 0.02;
+    private static final double CONGESTION_LIMIT_X = 0.1; // 0.05?
+    private static final double CONGESTION_LIMIT_Y = 0.1;
     private static final int CONGESTED_NEIGHBORS_LIMIT = 2;
     public static final int VIRGIN_BIRTH_ENERGY = 100;
 
@@ -38,7 +42,7 @@ public class ElmasAlgorithm extends Algorithm {
     private Recombination recombination = new Recombination();
     private double migrationProb = 0.05;
     private int mutationNumber = 1;
-    private int iterationsNumber = 4000;
+    private int iterationsNumber = 1000;
     private int initialAgentsNumber = 200;
     private int islandsNumber = 5;
     private int eliteIslandsNumber = 3;
@@ -47,6 +51,9 @@ public class ElmasAlgorithm extends Algorithm {
 
     private int removedCount = 0;
     private int addedCount = 0;
+    private int congestedCount = 0;
+    private SBXCrossover crossover;
+    private PolynomialMutation polynomialMutation;
 
 
     /**
@@ -66,8 +73,20 @@ public class ElmasAlgorithm extends Algorithm {
 
     @Override
     public SolutionSet execute() throws JMException, ClassNotFoundException {
-
         problem = getProblem();
+
+        HashMap<String, Double> parameters = new HashMap<String, Double>();
+        parameters.put("probability", 0.9);
+        parameters.put("distributionIndex", 20.0);
+        crossover = (SBXCrossover) CrossoverFactory.getCrossoverOperator("SBXCrossover", parameters);
+
+
+        parameters = new HashMap<String, Double>();
+        parameters.put("probability", 1.0 / problem.getNumberOfVariables());
+        parameters.put("distributionIndex", 20.0);
+        polynomialMutation = (PolynomialMutation) MutationFactory.getMutationOperator("PolynomialMutation", parameters);
+
+
         mutation.setMutationsNumber(mutationNumber);
 
 
@@ -90,6 +109,7 @@ public class ElmasAlgorithm extends Algorithm {
         for (int i = 0; i < iterationsNumber; ++i) {
             removedCount = 0;
             addedCount = 0;
+            congestedCount = 0;
             int islandNum = 0;
             for (Island island : islands) {
                 runMeetingsOnIsland(Integer.toString(islandNum++), island, false);
@@ -118,7 +138,7 @@ public class ElmasAlgorithm extends Algorithm {
 
         for (Island island : getAllIslands()) {
             for (final IndividualAgent agent : island) {
-                final Solution solution = new Solution(problem, agent.getWrappedArrayReal());
+                final Solution solution = agent.getSolution();
                 problem.evaluate(solution);
                 solutionSet.add(solution);
             }
@@ -145,6 +165,7 @@ public class ElmasAlgorithm extends Algorithm {
             System.out.println("iteration = " + i);
             System.out.println("removed: " + removedCount);
             System.out.println("added: " + addedCount);
+            System.out.println("congested: " + congestedCount);
         }
     }
 
@@ -159,23 +180,25 @@ public class ElmasAlgorithm extends Algorithm {
             migrateEliteAgents(island);
         }
 
-        //mutateCongestedAgents(island);
+        mutateCongestedAgents(island);
         if (VERBOSE) {
             System.out.println("island num = " + islandId);
             System.out.println("island size = " + island.size());
         }
     }
 
-    private void mutateCongestedAgents(List<IndividualAgent> island) {
+    private void mutateCongestedAgents(Island island) throws JMException {
         for (IndividualAgent agent : island) {
             if (agent.getCongestedNeighbors() > CONGESTED_NEIGHBORS_LIMIT) {
-                mutation.mutateSolution(agent.getArrayReal().array_);
+                ++congestedCount;
+//                polynomialMutation.execute(agent.getSolution());
+                mutation.mutateSolution(solutionToArray(agent.getSolution()));
             }
         }
     }
 
-    protected IndividualAgent createRandomAgent() throws JMException {
-        IndividualAgent newAgent = new IndividualAgent(problem.getNumberOfVariables(), random, problem);
+    protected IndividualAgent createRandomAgent() throws JMException, ClassNotFoundException {
+        IndividualAgent newAgent = new IndividualAgent(new Solution(problem));
         newAgent.changeEnergy(VIRGIN_BIRTH_ENERGY);
         return newAgent;
     }
@@ -274,8 +297,8 @@ public class ElmasAlgorithm extends Algorithm {
     }
 
     private void updateCongestionInfo(IndividualAgent agent1, IndividualAgent agent2) throws JMException {
-        Solution solution1 = new Solution(problem, agent1.getWrappedArrayReal());
-        Solution solution2 = new Solution(problem, agent2.getWrappedArrayReal());
+        Solution solution1 = agent1.getSolution();
+        Solution solution2 = agent2.getSolution();
         problem.evaluate(solution1);
         problem.evaluate(solution2);
         if (areCongested(solution1, solution2)) {
@@ -284,16 +307,17 @@ public class ElmasAlgorithm extends Algorithm {
         }
     }
 
-    private IndividualAgent selfReproduction(IndividualAgent individualAgent) {
-        ArrayReal copy = copyArrayReal(individualAgent);
-        mutation.mutateSolution(copy.array_);
+    private IndividualAgent selfReproduction(IndividualAgent individualAgent) throws JMException {
+        Solution copy = individualAgent.copySolution();
+//        polynomialMutation.execute(copy);
+        mutation.mutateSolution(solutionToArray(copy));
         IndividualAgent child = new IndividualAgent(copy);
         transferEnergy(individualAgent, child, CHILD_TRANSFER_ENERGY);
         return child;
     }
 
-    private ArrayReal copyArrayReal(IndividualAgent individualAgent) {
-        return (ArrayReal) individualAgent.getArrayReal().deepCopy();
+    private Double[] solutionToArray(Solution solution) {
+        return ((ArrayReal) (solution.getDecisionVariables()[0])).array_;
     }
 
     private void transferEnergy(IndividualAgent from, IndividualAgent to, int amount) {
@@ -316,8 +340,8 @@ public class ElmasAlgorithm extends Algorithm {
     }
 
     private IndividualAgent getWiner(IndividualAgent agent1, IndividualAgent agent2) throws JMException {
-        Solution solution1 = new Solution(problem, agent1.getWrappedArrayReal());
-        Solution solution2 = new Solution(problem, agent2.getWrappedArrayReal());
+        Solution solution1 = agent1.getSolution();
+        Solution solution2 = agent2.getSolution();
         problem.evaluate(solution1);
         problem.evaluate(solution2);
         if (dominates(solution1, solution2)) {
@@ -338,12 +362,10 @@ public class ElmasAlgorithm extends Algorithm {
     }
 
     private IndividualAgent reproduction(IndividualAgent individualAgent, IndividualAgent other) throws JMException {
-        ArrayReal copiedAgent1 = copyArrayReal(individualAgent);
-        Double[] copy1 = copiedAgent1.array_;
-        Double[] copy3 = copyArrayReal(other).array_;
-        recombination.recombine(copy1, copy3);
-        mutation.mutateSolution(copiedAgent1.array_);
-        IndividualAgent child = new IndividualAgent(copiedAgent1);
+        Solution[] offspring = (Solution[]) crossover.execute(new Solution[]{individualAgent.copySolution(), other.copySolution()});
+//        polynomialMutation.execute(offspring[0]);
+        mutation.mutateSolution(solutionToArray(offspring[0]));
+        IndividualAgent child = new IndividualAgent(offspring[0]);
         transferEnergy(individualAgent, child, CHILD_TRANSFER_ENERGY);
         transferEnergy(other, child, CHILD_TRANSFER_ENERGY);
         return child;
@@ -354,7 +376,7 @@ public class ElmasAlgorithm extends Algorithm {
         return Iterables.transform(allAgents, new Function<IndividualAgent, Solution>() {
             @Override
             public Solution apply(IndividualAgent individualAgent) {
-                Solution solution = new Solution(problem, individualAgent.getWrappedArrayReal());
+                Solution solution = individualAgent.getSolution();
                 try {
                     problem.evaluate(solution);
                 } catch (JMException e) {

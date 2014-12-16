@@ -1,49 +1,29 @@
 package metal;
 
-import jmetal.core.Problem;
-import jmetal.core.Variable;
-import jmetal.encodings.variable.ArrayReal;
-import jmetal.util.JMException;
-
-import java.util.Random;
+import jmetal.core.Solution;
 
 /**
  * Created by pawel on 09/12/14.
  */
 public class IndividualAgent {
 
-    private Double[] variables;
-    private ArrayReal arrayReal;
-    private int energy = 0;
+    private final Solution solution;
 
+    private int energy = 0;
     private int congestedNeighbors = 0;
     private boolean elite;
 
-    public IndividualAgent(ArrayReal copy) {
-        arrayReal = copy;
-        variables = arrayReal.array_;
-    }
-
-    public IndividualAgent(int size, Random random, Problem problem) throws JMException {
-        arrayReal = new ArrayReal(size, problem);
-        variables = arrayReal.array_;
-        for (int i = 0; i < size; ++i) {
-            variables[i] = random.nextDouble();
-        }
+    public IndividualAgent(Solution copy) {
+        solution = copy;
     }
 
     public int energy() {
         return energy;
     }
 
-    public Double[] getDoubleArray() {
-        return variables;
-    }
 
-    public Variable[] getWrappedArrayReal() {
-        Variable[] variable = new Variable[1];
-        variable[0] = arrayReal;
-        return variable;
+    public Solution copySolution() {
+        return new Solution(solution.getProblem(), solution.getDecisionVariables());
     }
 
     public void changeEnergy(int i) {
@@ -53,9 +33,6 @@ public class IndividualAgent {
         energy += i;
     }
 
-    public ArrayReal getArrayReal() {
-        return arrayReal;
-    }
 
     public int getCongestedNeighbors() {
         return congestedNeighbors;
@@ -75,5 +52,9 @@ public class IndividualAgent {
 
     public void setElite(boolean elite) {
         this.elite = elite;
+    }
+
+    public Solution getSolution() {
+        return solution;
     }
 }
