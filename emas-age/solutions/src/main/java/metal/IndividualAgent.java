@@ -47,6 +47,9 @@ public class IndividualAgent {
     }
 
     public void changeEnergy(int i) {
+        if (energy + i < 0) {
+            throw new IllegalStateException("Can't take so much energy!");
+        }
         energy += i;
     }
 
