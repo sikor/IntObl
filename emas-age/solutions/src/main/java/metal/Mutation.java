@@ -65,12 +65,12 @@ public class Mutation {
         }
     };
     ImmutableList<Function<Double[], Void>> mutateFunctions = ImmutableList.<Function<Double[], Void>>builder()
-            .add(mutateFirst)
+//            .add(mutateFirst)
             .add(mutateFirst)
             .add(decreaseAll)
-//            .add(mutateOne)
+            .add(mutateOne)
 //            .add(swap)
-            .add(identity)
+//            .add(identity)
             .build();
 
 
@@ -86,7 +86,6 @@ public class Mutation {
 
     public void mutateSolution(Double[] solution) {
         for (int i = 0; i < mutationsNumber; i++) {
-            if (random.nextBoolean())
                 mutateFunctions.get(random.nextInt(mutateFunctions.size())).apply(solution);
         }
 

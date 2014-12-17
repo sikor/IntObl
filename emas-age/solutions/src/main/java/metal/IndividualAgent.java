@@ -12,6 +12,7 @@ public class IndividualAgent {
     private int energy = 0;
     private int congestedNeighbors = 0;
     private boolean elite;
+    private int wonInARow = 0;
 
     public IndividualAgent(Solution copy) {
         solution = copy;
@@ -23,7 +24,7 @@ public class IndividualAgent {
 
 
     public Solution copySolution() {
-        return new Solution(solution.getProblem(), solution.getDecisionVariables());
+        return new Solution(solution);
     }
 
     public void changeEnergy(int i) {
@@ -56,5 +57,17 @@ public class IndividualAgent {
 
     public Solution getSolution() {
         return solution;
+    }
+
+    public void won() {
+        ++wonInARow;
+    }
+
+    public void loose() {
+        wonInARow = 0;
+    }
+
+    public int getWonInARow() {
+        return wonInARow;
     }
 }
