@@ -21,31 +21,12 @@ public class ElmasAlgorithm extends Algorithm {
     /**
      *
      */
-    public static final int BATTLE_TRANSFER_ENERGY = 20;
-    public static final int REPRODUCTION_PREDICATE = 90; //wazne zeby rozmnazali sie tylko najlepsi
-    public static final int CHILD_TRANSFER_ENERGY = 50;
-    public static final int MIGRATION_ENERGY_CHANGE = 0;
-    public static final int MIGRATION_PREDICATE = 20;
-    public static final int DEAD_PREDICATE = 0;
-    public static final int ELITISM_PREDICATE = 130;
-    private static final double CONGESTION_LIMIT_X = 0.05; // 0.05?
-    private static final double CONGESTION_LIMIT_Y = 0.05;
-    private static final int CONGESTED_NEIGHBORS_LIMIT = 8;
-    public static final int VIRGIN_BIRTH_ENERGY = 100;
+
 
     private Problem problem;
     private Mutation mutation = new Mutation();
     private Recombination recombination = new Recombination();
-    private double migrationProb = 0.05;
-    private int mutationNumber = 2;
-    private int iterationsNumber = 20000;
-    private int initialAgentsNumber = 400;
-    private int islandsNumber = 5;
-    private int eliteIslandsNumber = 1;
-    private double battleProbability = 0.5;
-    private int eliteWonCountNumber = 20;
 
-    private int plottingFrequency = 500;
 
     private int removedCount = 0;
     private int addedCount = 0;
@@ -85,18 +66,18 @@ public class ElmasAlgorithm extends Algorithm {
         metalMutation = MutationFactory.getMutationOperator("PolynomialMutation", parameters);
 
 
-        mutation.setMutationsNumber(mutationNumber);
+        mutation.setMutationsNumber(EmasConfig.mutationNumber);
 
 
         //initialize agents
-        for (int i = 0; i < islandsNumber; ++i) {
+        for (int i = 0; i < EmasConfig.islandsNumber; ++i) {
             Island individualAgents = new Island();
             islands.add(individualAgents);
-            for (int j = 0; j < initialAgentsNumber; ++j) {
+            for (int j = 0; j < EmasConfig.initialAgentsNumber; ++j) {
                 individualAgents.add(createRandomAgent());
             }
         }
-        for (int i = 0; i < eliteIslandsNumber; ++i) {
+        for (int i = 0; i < EmasConfig.eliteIslandsNumber; ++i) {
             eliteIslands.add(new Island());
         }
 
@@ -104,7 +85,7 @@ public class ElmasAlgorithm extends Algorithm {
         //Agents meetings
         System.out.println(">>>>> BEFORE: " + Iterables.size(Iterables.concat(islands)));
         System.out.println(">>>>> BEFORE ENERGY: " + currentEnvironmentEnergy());
-        for (int i = 0; i < iterationsNumber; ++i) {
+        for (int i = 0; i < EmasConfig.iterationsNumber; ++i) {
             removedCount = 0;
             addedCount = 0;
             congestedCount = 0;
@@ -187,7 +168,7 @@ public class ElmasAlgorithm extends Algorithm {
 
     private void mutateCongestedAgents(Island island) throws JMException {
         for (IndividualAgent agent : island) {
-            if (agent.getCongestedNeighbors() > CONGESTED_NEIGHBORS_LIMIT) {
+            if (agent.getCongestedNeighbors() > EmasConfig.CONGESTED_NEIGHBORS_LIMIT) {
                 ++congestedCount;
 //                metalMutation.execute(agent.getSolution());
                 mutate(agent);
@@ -207,7 +188,7 @@ public class ElmasAlgorithm extends Algorithm {
 
     protected IndividualAgent createRandomAgent() throws JMException, ClassNotFoundException {
         IndividualAgent newAgent = new IndividualAgent(new Solution(problem));
-        newAgent.changeEnergy(VIRGIN_BIRTH_ENERGY);
+        newAgent.changeEnergy(EmasConfig.VIRGIN_BIRTH_ENERGY);
         return newAgent;
     }
 
@@ -236,7 +217,7 @@ public class ElmasAlgorithm extends Algorithm {
     }
 
     private void plot(int iteration) {
-        if (iteration % plottingFrequency == 0) {
+        if (iteration % EmasConfig.plottingFrequency == 0) {
             new SolutionPlotter(getCurrentSolutions(islands), "iter-" + iteration).plot();
             Iterable<Solution> eliteSolutions = getCurrentSolutions(eliteIslands);
             if (!Iterables.isEmpty(eliteSolutions)) {
@@ -251,8 +232,8 @@ public class ElmasAlgorithm extends Algorithm {
                 return;
             }
 
-            if (agent.energy() > MIGRATION_PREDICATE && random.nextDouble() < migrationProb) {
-                agent.changeEnergy(MIGRATION_ENERGY_CHANGE);
+            if (agent.energy() > EmasConfig.MIGRATION_PREDICATE && random.nextDouble() < EmasConfig.migrationProb) {
+                agent.changeEnergy(EmasConfig.MIGRATION_ENERGY_CHANGE);
                 List<Island> islandsGroup = getIslands(agent.isElite());
                 island.sendAgentToOtherIsland(agent, islandsGroup.get(random.nextInt(islandsGroup.size())));
                 return;
@@ -261,14 +242,14 @@ public class ElmasAlgorithm extends Algorithm {
             if (!(island.size() < 2 || islandCopy.size() < 2)) {
                 int otherIndex = random.nextInt(islandCopy.size());
                 IndividualAgent other = islandCopy.get(otherIndex);
-                while (other.equals(agent) || !island.contains(other) || other.energy() <= DEAD_PREDICATE) {
+                while (other.equals(agent) || !island.contains(other) || other.energy() <= EmasConfig.DEAD_PREDICATE) {
                     otherIndex = (otherIndex + 1) % islandCopy.size();
                     other = islandCopy.get(otherIndex);
                 }
 
                 updateCongestionInfo(agent, other);
 
-                if (!(reproductionPredicate(other) && reproductionPredicate(agent)) || random.nextDouble() < battleProbability) {
+                if (!(reproductionPredicate(other) && reproductionPredicate(agent)) || random.nextDouble() < EmasConfig.battleProbability) {
                     battleBetween(agent, other);
                     removeIfDead(island, agent);
                     removeIfDead(island, other);
@@ -292,7 +273,7 @@ public class ElmasAlgorithm extends Algorithm {
 
     public boolean removeIfDead(Island island, IndividualAgent other) {
         boolean removed = false;
-        if (other.energy() <= DEAD_PREDICATE) {
+        if (other.energy() <= EmasConfig.DEAD_PREDICATE) {
             island.kill(other);
             ++removedCount;
             removed = true;
@@ -325,7 +306,7 @@ public class ElmasAlgorithm extends Algorithm {
 //        mutation.mutateSolution(solutionToArray(copy));
         IndividualAgent child = new IndividualAgent(copy);
         mutate(child);
-        transferEnergy(individualAgent, child, CHILD_TRANSFER_ENERGY);
+        transferEnergy(individualAgent, child, EmasConfig.CHILD_TRANSFER_ENERGY);
         return child;
     }
 
@@ -340,15 +321,15 @@ public class ElmasAlgorithm extends Algorithm {
     }
 
     public boolean reproductionPredicate(IndividualAgent agent) {
-        return agent.energy() > REPRODUCTION_PREDICATE;
+        return agent.energy() > EmasConfig.REPRODUCTION_PREDICATE;
     }
 
     private void battleBetween(IndividualAgent agent1, IndividualAgent agent2) throws JMException {
         IndividualAgent winner = getWiner(agent1, agent2);
         if (winner == agent1) {
-            transferEnergy(agent2, agent1, BATTLE_TRANSFER_ENERGY);
+            transferEnergy(agent2, agent1, EmasConfig.BATTLE_TRANSFER_ENERGY);
         } else if (winner == agent2) {
-            transferEnergy(agent1, agent2, BATTLE_TRANSFER_ENERGY);
+            transferEnergy(agent1, agent2, EmasConfig.BATTLE_TRANSFER_ENERGY);
         }
     }
 
@@ -391,8 +372,8 @@ public class ElmasAlgorithm extends Algorithm {
 
         IndividualAgent child = new IndividualAgent(offspring[0]);
         mutate(child);
-        transferEnergy(individualAgent, child, CHILD_TRANSFER_ENERGY);
-        transferEnergy(other, child, CHILD_TRANSFER_ENERGY);
+        transferEnergy(individualAgent, child, EmasConfig.CHILD_TRANSFER_ENERGY);
+        transferEnergy(other, child, EmasConfig.CHILD_TRANSFER_ENERGY);
         return new IndividualAgent[]{child};
     }
 
@@ -415,8 +396,8 @@ public class ElmasAlgorithm extends Algorithm {
     private boolean areCongested(Solution solution1, Solution solution2) {
         double objective1diff = Math.abs(solution1.getObjective(1) - solution2.getObjective(1));
         double objective0diff = Math.abs(solution1.getObjective(0) - solution2.getObjective(0));
-        return objective0diff < CONGESTION_LIMIT_X
-                && objective1diff < CONGESTION_LIMIT_Y;
+        return objective0diff < EmasConfig.CONGESTION_LIMIT_X
+                && objective1diff < EmasConfig.CONGESTION_LIMIT_Y;
     }
 }
 

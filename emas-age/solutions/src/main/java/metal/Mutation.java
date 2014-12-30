@@ -36,7 +36,7 @@ public class Mutation {
         }
     };
 
-    private Function<Double[], Void> decreaseAll = new Function<Double[], Void>() {
+private Function<Double[], Void> decreaseAll = new Function<Double[], Void>() {
         public Void apply(Double[] representation) {
             for (int i = 0; i < representation.length; i++) {
                 representation[i] -= 0.05;
