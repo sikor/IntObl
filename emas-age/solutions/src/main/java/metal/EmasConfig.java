@@ -6,6 +6,7 @@ import com.typesafe.config.ConfigFactory;
 public class EmasConfig {
     private final static Config config = ConfigFactory.load();
 
+    public static final boolean ELITISM_SWITCH = config.getBoolean("ELITISM_SWITCH");
     public static final int BATTLE_TRANSFER_ENERGY = config.getInt("BATTLE_TRANSFER_ENERGY");
     public static final int REPRODUCTION_PREDICATE = config.getInt("REPRODUCTION_PREDICATE"); //wazne zeby rozmnazali sie tylko najlepsi
     public static final int CHILD_TRANSFER_ENERGY = config.getInt("CHILD_TRANSFER_ENERGY");
@@ -15,7 +16,6 @@ public class EmasConfig {
     public static final int ELITISM_PREDICATE = config.getInt("ELITISM_PREDICATE");
     public static final double CONGESTION_LIMIT_X = config.getDouble("CONGESTION_LIMIT_X");
     public static final double CONGESTION_LIMIT_Y = config.getDouble("CONGESTION_LIMIT_Y");
-    public static final int CONGESTED_NEIGHBORS_LIMIT = config.getInt("CONGESTED_NEIGHBORS_LIMIT");
     public static final int VIRGIN_BIRTH_ENERGY = config.getInt("VIRGIN_BIRTH_ENERGY");
 
 

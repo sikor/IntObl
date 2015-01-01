@@ -35,7 +35,7 @@ public class Island implements Iterable<IndividualAgent> {
     }
 
     public void kill(IndividualAgent agent) {
-        if (agent.energy() > EmasConfig.DEAD_PREDICATE) {
+        if (agent.energy() > EmasConfig.DEAD_PREDICATE && !agent.isElite()) {
             throw new IllegalArgumentException("can't kill agent with so much energy!");
         }
         if (!agents.remove(agent)) {

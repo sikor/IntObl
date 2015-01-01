@@ -1,6 +1,7 @@
 package metal;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import jmetal.core.*;
 import jmetal.encodings.variable.ArrayReal;
@@ -115,14 +116,11 @@ public class ElmasAlgorithm extends Algorithm {
         final SolutionSet solutionSet = new SolutionSet();
         solutionSet.setCapacity(Integer.MAX_VALUE);
 
-        for (Island island : getAllIslands()) {
-            for (final IndividualAgent agent : island) {
-                final Solution solution = agent.getSolution();
-                problem.evaluate(solution);
-                solutionSet.add(solution);
-            }
+        for (final IndividualAgent agent : notDominatedAgents()) {
+            Solution solution = agent.getSolution();
+            problem.evaluate(solution);
+            solutionSet.add(solution);
         }
-
 
         return solutionSet;
     }
@@ -152,10 +150,14 @@ public class ElmasAlgorithm extends Algorithm {
 
         ArrayList<IndividualAgent> islandCopy = island.copyAgentsList();
         for (IndividualAgent agent : islandCopy) {
-            encounterAction(islandCopy, agent, island);
+            if (isElite) {
+                eliteEncounterAction(islandCopy, agent, island);
+            } else {
+                encounterAction(islandCopy, agent, island);
+            }
         }
 
-        if (!isElite) {
+        if (EmasConfig.ELITISM_SWITCH && !isElite) {
             migrateEliteAgents(island);
         }
 
@@ -163,16 +165,6 @@ public class ElmasAlgorithm extends Algorithm {
         if (VERBOSE) {
             System.out.println("island num = " + islandId);
             System.out.println("island size = " + island.size());
-        }
-    }
-
-    private void mutateCongestedAgents(Island island) throws JMException {
-        for (IndividualAgent agent : island) {
-            if (agent.getCongestedNeighbors() > EmasConfig.CONGESTED_NEIGHBORS_LIMIT) {
-                ++congestedCount;
-//                metalMutation.execute(agent.getSolution());
-                mutate(agent);
-            }
         }
     }
 
@@ -227,6 +219,46 @@ public class ElmasAlgorithm extends Algorithm {
         }
     }
 
+    public void eliteEncounterAction(List<IndividualAgent> islandCopy, IndividualAgent agent, Island island) {
+        try {
+            if (!island.contains(agent)) { //agent can be removed during iteration.
+                return;
+            }
+
+            IndividualAgent looser = null;
+
+            if (!(island.size() < 2 || islandCopy.size() < 2)) {
+                IndividualAgent other = findAgentToMeet(islandCopy, agent, island);
+
+                IndividualAgent winner = getWinner(agent, other);
+                if (winner != null) {
+                    looser = winner == agent ? other : agent;
+                    island.kill(looser);
+                }
+            }
+
+            if (looser != agent && random.nextDouble() < EmasConfig.migrationProb) {
+                agent.changeEnergy(EmasConfig.MIGRATION_ENERGY_CHANGE);
+                List<Island> islandsGroup = getIslands(agent.isElite());
+                island.sendAgentToOtherIsland(agent, islandsGroup.get(random.nextInt(islandsGroup.size())));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    protected IndividualAgent findAgentToMeet(List<IndividualAgent> islandCopy, IndividualAgent agent, Island island) {
+        int otherIndex = random.nextInt(islandCopy.size());
+        IndividualAgent other = islandCopy.get(otherIndex);
+        while (other.equals(agent) || !island.contains(other) || other.energy() <= EmasConfig.DEAD_PREDICATE) {
+            otherIndex = (otherIndex + 1) % islandCopy.size();
+            other = islandCopy.get(otherIndex);
+        }
+        return other;
+    }
+
     public void encounterAction(List<IndividualAgent> islandCopy, IndividualAgent agent, Island island) {
         try {
             if (!island.contains(agent)) { //agent can be removed during iteration.
@@ -241,12 +273,7 @@ public class ElmasAlgorithm extends Algorithm {
             }
 
             if (!(island.size() < 2 || islandCopy.size() < 2)) {
-                int otherIndex = random.nextInt(islandCopy.size());
-                IndividualAgent other = islandCopy.get(otherIndex);
-                while (other.equals(agent) || !island.contains(other) || other.energy() <= EmasConfig.DEAD_PREDICATE) {
-                    otherIndex = (otherIndex + 1) % islandCopy.size();
-                    other = islandCopy.get(otherIndex);
-                }
+                IndividualAgent other = findAgentToMeet(islandCopy, agent, island);
 
                 informationExchange(agent, other);
 
@@ -402,6 +429,26 @@ public class ElmasAlgorithm extends Algorithm {
         double objective0diff = Math.abs(solution1.getObjective(0) - solution2.getObjective(0));
         return objective0diff < EmasConfig.CONGESTION_LIMIT_X
                 && objective1diff < EmasConfig.CONGESTION_LIMIT_Y;
+    }
+
+    private Iterable<IndividualAgent> notDominatedAgents() {
+        final Iterable<IndividualAgent> agents = Iterables.concat(islands);
+
+        return Iterables.filter(agents, new Predicate<IndividualAgent>() {
+            @Override
+            public boolean apply(final IndividualAgent agent) {
+                return Iterables.all(agents, new Predicate<IndividualAgent>() {
+                    @Override
+                    public boolean apply(IndividualAgent other) {
+                        try {
+                            return getWinner(agent, other) != other;
+                        } catch (JMException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
+            }
+        });
     }
 }
 
