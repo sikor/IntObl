@@ -10,7 +10,12 @@ public class IndividualAgent {
     private final Solution solution;
 
     private int energy = 0;
+    private int prestige = 0;
+
+    private int meetingsCount = 0;
     private int congestedNeighbors = 0;
+    private double averageCongestionOfOthers = 0.0;
+
     private boolean elite;
     private int wonInARow = 0;
 
@@ -34,17 +39,21 @@ public class IndividualAgent {
         energy += i;
     }
 
+    public void meet(IndividualAgent other) {
+        averageCongestionOfOthers = (averageCongestionOfOthers * meetingsCount + other.getCongestedNeighbors()) / (meetingsCount + 1);
+        meetingsCount++;
+    }
 
     public int getCongestedNeighbors() {
         return congestedNeighbors;
     }
 
-    public void addCongestedNeighbor() {
-        congestedNeighbors++;
+    public double getAverageCongestionOfOthers() {
+        return averageCongestionOfOthers;
     }
 
-    public void clearCongestedNeighbors() {
-        congestedNeighbors = 0;
+    public void addCongestedNeighbor() {
+        congestedNeighbors++;
     }
 
     public boolean isElite() {
@@ -61,6 +70,7 @@ public class IndividualAgent {
 
     public void won() {
         ++wonInARow;
+        ++prestige;
     }
 
     public void loose() {
@@ -69,5 +79,9 @@ public class IndividualAgent {
 
     public int getWonInARow() {
         return wonInARow;
+    }
+
+    public int getPrestige() {
+        return prestige;
     }
 }

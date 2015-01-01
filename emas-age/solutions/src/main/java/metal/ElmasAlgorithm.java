@@ -206,14 +206,15 @@ public class ElmasAlgorithm extends Algorithm {
             if (isElite(eliteAgent)) {
                 agentIterator.remove();
                 eliteAgent.setElite(true);
-                eliteAgent.clearCongestedNeighbors();
                 eliteIslands.get(random.nextInt(eliteIslands.size())).add(eliteAgent);
             }
+
         }
     }
 
-    private boolean isElite(IndividualAgent eliteAgent) {
-        return false; //eliteAgent.getWonInARow() >= eliteWonCountNumber;// && eliteAgent.energy() > ELITISM_PREDICATE; //&& eliteAgent.getCongestedNeighbors() > CONGESTED_NEIGHBORS_LIMIT;
+    private boolean isElite(IndividualAgent agent) {
+        return agent.getPrestige() >= EmasConfig.ELITISM_PREDICATE
+                && agent.getCongestedNeighbors() > agent.getAverageCongestionOfOthers();
     }
 
     private void plot(int iteration) {
@@ -247,7 +248,7 @@ public class ElmasAlgorithm extends Algorithm {
                     other = islandCopy.get(otherIndex);
                 }
 
-                updateCongestionInfo(agent, other);
+                informationExchange(agent, other);
 
                 if (!(reproductionPredicate(other) && reproductionPredicate(agent)) || random.nextDouble() < EmasConfig.battleProbability) {
                     battleBetween(agent, other);
@@ -289,7 +290,7 @@ public class ElmasAlgorithm extends Algorithm {
             return islands;
     }
 
-    private void updateCongestionInfo(IndividualAgent agent1, IndividualAgent agent2) throws JMException {
+    private void informationExchange(IndividualAgent agent1, IndividualAgent agent2) throws JMException {
         Solution solution1 = agent1.getSolution();
         Solution solution2 = agent2.getSolution();
         problem.evaluate(solution1);
@@ -298,6 +299,9 @@ public class ElmasAlgorithm extends Algorithm {
             agent1.addCongestedNeighbor();
             agent2.addCongestedNeighbor();
         }
+
+        agent1.meet(agent2);
+        agent2.meet(agent1);
     }
 
     private IndividualAgent selfReproduction(IndividualAgent individualAgent) throws JMException {
@@ -325,7 +329,7 @@ public class ElmasAlgorithm extends Algorithm {
     }
 
     private void battleBetween(IndividualAgent agent1, IndividualAgent agent2) throws JMException {
-        IndividualAgent winner = getWiner(agent1, agent2);
+        IndividualAgent winner = getWinner(agent1, agent2);
         if (winner == agent1) {
             transferEnergy(agent2, agent1, EmasConfig.BATTLE_TRANSFER_ENERGY);
         } else if (winner == agent2) {
@@ -333,7 +337,7 @@ public class ElmasAlgorithm extends Algorithm {
         }
     }
 
-    private IndividualAgent getWiner(IndividualAgent agent1, IndividualAgent agent2) throws JMException {
+    private IndividualAgent getWinner(IndividualAgent agent1, IndividualAgent agent2) throws JMException {
         Solution solution1 = agent1.getSolution();
         Solution solution2 = agent2.getSolution();
         problem.evaluate(solution1);
