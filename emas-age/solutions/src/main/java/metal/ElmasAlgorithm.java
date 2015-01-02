@@ -116,7 +116,7 @@ public class ElmasAlgorithm extends Algorithm {
         final SolutionSet solutionSet = new SolutionSet();
         solutionSet.setCapacity(Integer.MAX_VALUE);
 
-        for (final IndividualAgent agent : notDominatedAgents()) {
+        for (final IndividualAgent agent : agentsToReturn()) {
             Solution solution = agent.getSolution();
             problem.evaluate(solution);
             solutionSet.add(solution);
@@ -179,8 +179,7 @@ public class ElmasAlgorithm extends Algorithm {
     }
 
     protected IndividualAgent createRandomAgent() throws JMException, ClassNotFoundException {
-        IndividualAgent newAgent = new IndividualAgent(new Solution(problem));
-        newAgent.changeEnergy(EmasConfig.VIRGIN_BIRTH_ENERGY);
+        IndividualAgent newAgent = new IndividualAgent(new Solution(problem), EmasConfig.VIRGIN_BIRTH_ENERGY);
         return newAgent;
     }
 
@@ -192,15 +191,13 @@ public class ElmasAlgorithm extends Algorithm {
     }
 
     private void migrateEliteAgents(Island island) throws JMException {
-        Iterator<IndividualAgent> agentIterator = island.iterator();
+        Island.IslandIterator agentIterator = island.iterator();
         while (agentIterator.hasNext()) {
             IndividualAgent eliteAgent = agentIterator.next();
             if (isElite(eliteAgent)) {
-                agentIterator.remove();
                 eliteAgent.setElite(true);
-                eliteIslands.get(random.nextInt(eliteIslands.size())).add(eliteAgent);
+                agentIterator.sendAgentToOtherIsland(eliteIslands.get(random.nextInt(eliteIslands.size())));
             }
-
         }
     }
 
@@ -233,14 +230,14 @@ public class ElmasAlgorithm extends Algorithm {
                 IndividualAgent winner = getWinner(agent, other);
                 if (winner != null) {
                     looser = winner == agent ? other : agent;
+                    looser.giveEnergy(winner, looser.energy());
                     island.kill(looser);
                 }
             }
 
             if (looser != agent && random.nextDouble() < EmasConfig.migrationProb) {
-                agent.changeEnergy(EmasConfig.MIGRATION_ENERGY_CHANGE);
                 List<Island> islandsGroup = getIslands(agent.isElite());
-                island.sendAgentToOtherIsland(agent, islandsGroup.get(random.nextInt(islandsGroup.size())));
+                agent.migrate(island, islandsGroup.get(random.nextInt(islandsGroup.size())), EmasConfig.MIGRATION_ENERGY_CHANGE);
             }
 
         } catch (Exception e) {
@@ -266,9 +263,8 @@ public class ElmasAlgorithm extends Algorithm {
             }
 
             if (agent.energy() > EmasConfig.MIGRATION_PREDICATE && random.nextDouble() < EmasConfig.migrationProb) {
-                agent.changeEnergy(EmasConfig.MIGRATION_ENERGY_CHANGE);
                 List<Island> islandsGroup = getIslands(agent.isElite());
-                island.sendAgentToOtherIsland(agent, islandsGroup.get(random.nextInt(islandsGroup.size())));
+                agent.migrate(island, islandsGroup.get(random.nextInt(islandsGroup.size())), EmasConfig.MIGRATION_ENERGY_CHANGE);
                 return;
             }
 
@@ -335,7 +331,7 @@ public class ElmasAlgorithm extends Algorithm {
         Solution copy = individualAgent.copySolution();
 //        metalMutation.execute(copy);
 //        mutation.mutateSolution(solutionToArray(copy));
-        IndividualAgent child = new IndividualAgent(copy);
+        IndividualAgent child = new IndividualAgent(copy, 0);
         mutate(child);
         transferEnergy(individualAgent, child, EmasConfig.CHILD_TRANSFER_ENERGY);
         return child;
@@ -347,8 +343,7 @@ public class ElmasAlgorithm extends Algorithm {
 
     private void transferEnergy(IndividualAgent from, IndividualAgent to, int amount) {
         int energyFlow = Math.min(from.energy(), amount); //cant give more than has
-        from.changeEnergy(-energyFlow);
-        to.changeEnergy(energyFlow);
+        from.giveEnergy(to, energyFlow);
     }
 
     public boolean reproductionPredicate(IndividualAgent agent) {
@@ -401,7 +396,7 @@ public class ElmasAlgorithm extends Algorithm {
 //        metalMutation.execute(offspring[0]);
 //        mutation.mutateSolution(solutionToArray(offspring[0]));
 
-        IndividualAgent child = new IndividualAgent(offspring[0]);
+        IndividualAgent child = new IndividualAgent(offspring[0], 0);
         mutate(child);
         transferEnergy(individualAgent, child, EmasConfig.CHILD_TRANSFER_ENERGY);
         transferEnergy(other, child, EmasConfig.CHILD_TRANSFER_ENERGY);
@@ -431,8 +426,20 @@ public class ElmasAlgorithm extends Algorithm {
                 && objective1diff < EmasConfig.CONGESTION_LIMIT_Y;
     }
 
-    private Iterable<IndividualAgent> notDominatedAgents() {
-        final Iterable<IndividualAgent> agents = Iterables.concat(islands);
+    /**
+     * @return Nondominated agents from configured islands.
+     */
+    private Iterable<IndividualAgent> agentsToReturn() {
+        Iterable<IndividualAgent> agents_ = Collections.emptyList();
+
+        if (EmasConfig.TAKE_NORMAL_ISLANDS_TO_RESULt) {
+            agents_ = Iterables.concat(agents_, Iterables.concat(islands));
+        }
+        if (EmasConfig.TAKE_ELITE_ISLANDS_TO_RESULT) {
+            agents_ = Iterables.concat(agents_, Iterables.concat(eliteIslands));
+        }
+        final Iterable<IndividualAgent> agents = agents_;
+
 
         return Iterables.filter(agents, new Predicate<IndividualAgent>() {
             @Override

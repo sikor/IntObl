@@ -1,5 +1,6 @@
 package metal;
 
+import com.google.common.base.Preconditions;
 import jmetal.core.Solution;
 
 /**
@@ -19,8 +20,9 @@ public class IndividualAgent {
     private boolean elite;
     private int wonInARow = 0;
 
-    public IndividualAgent(Solution copy) {
+    public IndividualAgent(Solution copy, int initialEnergy) {
         solution = copy;
+        changeEnergy(initialEnergy);
     }
 
     public int energy() {
@@ -32,11 +34,23 @@ public class IndividualAgent {
         return new Solution(solution);
     }
 
-    public void changeEnergy(int i) {
+    private void changeEnergy(int i) {
         if (energy + i < 0) {
             throw new IllegalStateException("Can't take so much energy!");
         }
         energy += i;
+    }
+
+    public void migrate(Island from, Island to, int migrationEnergyChange) {
+        from.sendAgentToOtherIsland(this, to);
+        changeEnergy(migrationEnergyChange);
+    }
+
+    public void giveEnergy(IndividualAgent target, int amount) {
+        Preconditions.checkArgument(amount >= 0);
+        Preconditions.checkNotNull(target);
+        target.changeEnergy(amount);
+        this.changeEnergy(-amount);
     }
 
     public void meet(IndividualAgent other) {

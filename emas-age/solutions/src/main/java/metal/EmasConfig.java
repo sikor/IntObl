@@ -17,6 +17,8 @@ public class EmasConfig {
     public static final double CONGESTION_LIMIT_X = config.getDouble("CONGESTION_LIMIT_X");
     public static final double CONGESTION_LIMIT_Y = config.getDouble("CONGESTION_LIMIT_Y");
     public static final int VIRGIN_BIRTH_ENERGY = config.getInt("VIRGIN_BIRTH_ENERGY");
+    public static final boolean TAKE_ELITE_ISLANDS_TO_RESULT = config.getBoolean("TAKE_ELITE_ISLANDS_TO_RESULT");
+    public static final boolean TAKE_NORMAL_ISLANDS_TO_RESULt = config.getBoolean("TAKE_NORMAL_ISLANDS_TO_RESULt");
 
 
     public static final double migrationProb = config.getDouble("migrationProb");
