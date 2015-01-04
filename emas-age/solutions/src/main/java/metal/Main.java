@@ -97,6 +97,7 @@ public class Main {
         if (indicators != null) {
             logger_.info("Quality indicators");
             logger_.info("Hypervolume: " + indicators.getHypervolume(population));
+            logger_.info("Ideal hypervolume: " + indicators.getTrueParetoFrontHypervolume());
             logger_.info("GD         : " + indicators.getGD(population));
             logger_.info("IGD        : " + indicators.getIGD(population));
             logger_.info("Spread     : " + indicators.getSpread(population));
