@@ -173,7 +173,7 @@ public class ElmasAlgorithm extends Algorithm {
 
     private void mutate(IndividualAgent agent) throws JMException {
         mutation.mutateSolution(solutionToArray(agent.getSolution()));
-        metalMutation.execute(agent.getSolution());
+//        metalMutation.execute(agent.getSolution());
 //        if(random.nextBoolean()){
 //            metalMutation.execute(agent.getSolution());
 //        }else{
@@ -206,7 +206,7 @@ public class ElmasAlgorithm extends Algorithm {
 
     private boolean isElite(IndividualAgent agent) {
         return agent.getPrestige() >= EmasConfig.ELITISM_PREDICATE
-                && agent.getCongestedNeighbors() > agent.getAverageCongestionOfOthers();
+                && (double) agent.getCongestedNeighbors() > agent.getAverageCongestionOfOthers();
     }
 
     private void plot(int iteration) {
@@ -324,6 +324,7 @@ public class ElmasAlgorithm extends Algorithm {
         if (areCongested(solution1, solution2)) {
             agent1.addCongestedNeighbor();
             agent2.addCongestedNeighbor();
+            ++congestedCount;
         }
 
         agent1.meet(agent2);

@@ -13,8 +13,8 @@ public class IndividualAgent {
     private int energy = 0;
     private int prestige = 0;
 
-    private int meetingsCount = 0;
-    private int congestedNeighbors = 0;
+    private double meetingsCount = 0;
+    private double congestedNeighbors = 0;
     private double averageCongestionOfOthers = 0.0;
 
     private boolean elite;
@@ -53,11 +53,11 @@ public class IndividualAgent {
     }
 
     public void meet(IndividualAgent other) {
-        averageCongestionOfOthers = (averageCongestionOfOthers * meetingsCount + other.getCongestedNeighbors()) / (meetingsCount + 1);
+        averageCongestionOfOthers = (averageCongestionOfOthers * meetingsCount + other.getCongestedNeighbors()) / (meetingsCount + 1.0);
         meetingsCount++;
     }
 
-    public int getCongestedNeighbors() {
+    public double getCongestedNeighbors() {
         return congestedNeighbors;
     }
 
