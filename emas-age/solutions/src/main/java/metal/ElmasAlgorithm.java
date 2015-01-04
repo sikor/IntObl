@@ -116,11 +116,14 @@ public class ElmasAlgorithm extends Algorithm {
         final SolutionSet solutionSet = new SolutionSet();
         solutionSet.setCapacity(Integer.MAX_VALUE);
 
+        int nonDominatedCount = 0;
         for (final IndividualAgent agent : agentsToReturn()) {
             Solution solution = agent.getSolution();
             problem.evaluate(solution);
             solutionSet.add(solution);
+            ++nonDominatedCount;
         }
+        System.out.println(">>> RETURNED SIZE: " + nonDominatedCount);
 
         return solutionSet;
     }
@@ -366,11 +369,9 @@ public class ElmasAlgorithm extends Algorithm {
         problem.evaluate(solution2);
         if (dominates(solution1, solution2)) {
             agent1.won();
-            agent2.loose();
             return agent1;
         } else if (dominates(solution2, solution1)) {
             agent2.won();
-            agent1.loose();
             return agent2;
         } else {
 //            if (agent1.getCongestedNeighbors() < agent2.getCongestedNeighbors()) {

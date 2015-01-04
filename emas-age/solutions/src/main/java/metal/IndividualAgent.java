@@ -18,7 +18,6 @@ public class IndividualAgent {
     private double averageCongestionOfOthers = 0.0;
 
     private boolean elite;
-    private int wonInARow = 0;
 
     public IndividualAgent(Solution copy, int initialEnergy) {
         solution = copy;
@@ -83,17 +82,9 @@ public class IndividualAgent {
     }
 
     public void won() {
-        ++wonInARow;
         ++prestige;
     }
 
-    public void loose() {
-        wonInARow = 0;
-    }
-
-    public int getWonInARow() {
-        return wonInARow;
-    }
 
     public int getPrestige() {
         return prestige;

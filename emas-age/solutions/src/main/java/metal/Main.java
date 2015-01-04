@@ -95,13 +95,13 @@ public class Main {
 //        population.printObjectivesToFile("FUN");
 
         if (indicators != null) {
-            logger_.info("Quality indicators");
-            logger_.info("Hypervolume: " + indicators.getHypervolume(population));
-            logger_.info("Ideal hypervolume: " + indicators.getTrueParetoFrontHypervolume());
-            logger_.info("GD         : " + indicators.getGD(population));
-            logger_.info("IGD        : " + indicators.getIGD(population));
-            logger_.info("Spread     : " + indicators.getSpread(population));
-            logger_.info("Epsilon    : " + indicators.getEpsilon(population));
+            System.out.println("Quality indicators");
+            System.out.println("Hypervolume: " + indicators.getHypervolume(population));
+            System.out.println("Ideal hypervolume: " + indicators.getTrueParetoFrontHypervolume());
+            System.out.println("GD         : " + indicators.getGD(population));
+            System.out.println("IGD        : " + indicators.getIGD(population));
+            System.out.println("Spread     : " + indicators.getSpread(population));
+            System.out.println("Epsilon    : " + indicators.getEpsilon(population));
         } // if
     } //main
 } // NSGAII_main

@@ -28,7 +28,7 @@ public class EmasConfig {
     public static final int islandsNumber = config.getInt("islandsNumber");
     public static final int eliteIslandsNumber = config.getInt("eliteIslandsNumber");
     public static final double battleProbability = config.getDouble("battleProbability");
-    public static final int eliteWonCountNumber = config.getInt("eliteWonCountNumber");
+//    public static final int eliteWonCountNumber = config.getInt("eliteWonCountNumber");
 
     public static final int plottingFrequency = config.getInt("plottingFrequency");
 }
