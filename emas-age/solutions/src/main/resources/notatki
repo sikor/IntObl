@@ -1,0 +1,22 @@
+
+EMAS vs elEMAS
+  - rozmiar populacji
+  - krzyżowanie
+  - mutacja
+  - próg śmierci
+  - próg elitarności
+
+  - czas
+  - jakość (HVR?)
+  - liczba iteracji
+
+
+^ to do następnego tygodnia
+----------------------------------------------
+v to później
+Porównanie z innymi - NSGA2, SPEA
+
+-----------------------------------
+środowisko zaszumione (noisy?)
+funkcja ewaluacji z jakimś prawdopodobieństwem zwraca niepoprawny wynik
+EMASy powinny tu być lepsze

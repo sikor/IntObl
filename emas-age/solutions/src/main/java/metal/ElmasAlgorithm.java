@@ -390,7 +390,8 @@ public class ElmasAlgorithm extends Algorithm {
     }
 
     private boolean dominates(Solution solution1, Solution solution2) {
-        return solution1.getObjective(0) < solution2.getObjective(0) && solution1.getObjective(1) < solution2.getObjective(1);
+        return solution1.getObjective(0) < solution2.getObjective(0) && !(solution1.getObjective(1) > solution2.getObjective(1))
+                || !(solution1.getObjective(0) > solution2.getObjective(0)) && solution1.getObjective(1) < solution2.getObjective(1);
     }
 
     private IndividualAgent[] reproduction(IndividualAgent individualAgent, IndividualAgent other) throws JMException {
@@ -434,7 +435,7 @@ public class ElmasAlgorithm extends Algorithm {
     private Iterable<IndividualAgent> agentsToReturn() {
         Iterable<IndividualAgent> agents_ = Collections.emptyList();
 
-        if (EmasConfig.TAKE_NORMAL_ISLANDS_TO_RESULt) {
+        if (EmasConfig.TAKE_NORMAL_ISLANDS_TO_RESULT) {
             agents_ = Iterables.concat(agents_, Iterables.concat(islands));
         }
         if (EmasConfig.TAKE_ELITE_ISLANDS_TO_RESULT) {
