@@ -84,8 +84,10 @@ public class ElmasAlgorithm extends Algorithm {
 
 
         //Agents meetings
-        System.out.println(">>>>> BEFORE: " + Iterables.size(Iterables.concat(islands)));
-        System.out.println(">>>>> BEFORE ENERGY: " + currentEnvironmentEnergy());
+        if (EmasConfig.log) {
+            System.out.println(">>>>> BEFORE: " + Iterables.size(Iterables.concat(islands)));
+            System.out.println(">>>>> BEFORE ENERGY: " + currentEnvironmentEnergy());
+        }
         for (int i = 0; i < EmasConfig.iterationsNumber; ++i) {
             removedCount = 0;
             addedCount = 0;
@@ -104,12 +106,16 @@ public class ElmasAlgorithm extends Algorithm {
 
         }
 
-        System.out.println("finished elmas. creating solution set.");
+        if (EmasConfig.log) {
+            System.out.println("finished elmas. creating solution set.");
+        }
         Iterable<IndividualAgent> normalAgents = Iterables.concat(islands);
         Iterable<IndividualAgent> eliteAgents = Iterables.concat(this.eliteIslands);
-        System.out.println(">>>>> AFTER ENERGY: " + currentEnvironmentEnergy());
-        System.out.println(">>>>> AFTER: " + Iterables.size(normalAgents));
-        System.out.println(">>>>> ELITE: " + Iterables.size(eliteAgents));
+        if (EmasConfig.log) {
+            System.out.println(">>>>> AFTER ENERGY: " + currentEnvironmentEnergy());
+            System.out.println(">>>>> AFTER: " + Iterables.size(normalAgents));
+            System.out.println(">>>>> ELITE: " + Iterables.size(eliteAgents));
+        }
 
 
         //write solution
@@ -123,7 +129,9 @@ public class ElmasAlgorithm extends Algorithm {
             solutionSet.add(solution);
             ++nonDominatedCount;
         }
-        System.out.println(">>> RETURNED SIZE: " + nonDominatedCount);
+        if (EmasConfig.log) {
+            System.out.println(">>> RETURNED SIZE: " + nonDominatedCount);
+        }
 
         return solutionSet;
     }
@@ -141,7 +149,7 @@ public class ElmasAlgorithm extends Algorithm {
 
     private void log(int i) {
 
-        if (i % 50 == 0) {
+        if (EmasConfig.log && i % 50 == 0) {
             System.out.println("iteration = " + i);
             System.out.println("removed: " + removedCount);
             System.out.println("added: " + addedCount);
@@ -210,7 +218,7 @@ public class ElmasAlgorithm extends Algorithm {
     }
 
     private void plot(int iteration) {
-        if (iteration % EmasConfig.plottingFrequency == 0) {
+        if (EmasConfig.plot && iteration % EmasConfig.plottingFrequency == 0) {
             new SolutionPlotter(getCurrentSolutions(islands), "iter-" + iteration).plot();
             Iterable<Solution> eliteSolutions = getCurrentSolutions(eliteIslands);
             if (!Iterables.isEmpty(eliteSolutions)) {

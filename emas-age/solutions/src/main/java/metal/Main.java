@@ -86,7 +86,10 @@ public class Main {
         SolutionSet population = algorithm.execute();
         long estimatedTime = System.currentTimeMillis() - initTime;
 
-        new SolutionPlotter(population.iterator(), "final").plot();
+        System.out.println("Time: " + estimatedTime);
+        if (EmasConfig.plot) {
+            new SolutionPlotter(population.iterator(), "final").plot();
+        }
         // Result messages
 //        logger_.info("Total execution time: " + estimatedTime + "ms");
 //        logger_.info("Variables values have been writen to file VAR");
@@ -96,7 +99,7 @@ public class Main {
 
         if (indicators != null) {
             System.out.println("Quality indicators");
-            System.out.println("Hypervolume: " + indicators.getHypervolume(population));
+            System.out.println("Hypervolume: " + indicators.getHypervolume(population) / indicators.getTrueParetoFrontHypervolume());
             System.out.println("Ideal hypervolume: " + indicators.getTrueParetoFrontHypervolume());
             System.out.println("GD         : " + indicators.getGD(population));
             System.out.println("IGD        : " + indicators.getIGD(population));
