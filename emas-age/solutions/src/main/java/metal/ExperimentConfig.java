@@ -15,4 +15,6 @@ public class ExperimentConfig {
     public static final List<Integer> initialAgentsNumbers = config.getIntList("experiment.initialAgentsNumber");
     public static final List<Integer> eliteIslandsNumbers = config.getIntList("experiment.eliteIslandsNumber");
     public static final List<Integer> islandsNumbers = config.getIntList("experiment.islandsNumber");
+
+    public static final List<Integer> comparisonIterations = config.getIntList("experiment.comparison.iterationsNumber");
 }
