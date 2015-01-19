@@ -33,4 +33,8 @@ public class EmasConfig {
     public static final int plottingFrequency = config.getInt("plottingFrequency");
     public static final boolean plot = config.getBoolean("plot");
     public static final boolean log = config.getBoolean("log");
+
+    public static int wholePopulationSize() {
+        return islandsNumber * initialAgentsNumber;
+    }
 }

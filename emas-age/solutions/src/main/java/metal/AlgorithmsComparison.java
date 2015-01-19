@@ -24,6 +24,8 @@ public class AlgorithmsComparison {
     private static Problem problem;
     private static QualityIndicator indicators;
 
+    private static int experimentNo;
+
     private static ExperimentsDao experimentsDao = new ExperimentsDao();
 
     public static void main(String[] args) throws
@@ -36,6 +38,8 @@ public class AlgorithmsComparison {
 
         problem = new ZDT3("ArrayReal", 30);
         indicators = new QualityIndicator(problem, "emas-age/solutions/resources/ZDT/ZDT3.pf");
+        experimentNo = experimentsDao.generateNewExperimentNo();
+        System.out.println("ExperimentNo: " + experimentNo);
 
         runExperiments();
     }
@@ -51,14 +55,14 @@ public class AlgorithmsComparison {
     }
 
     private static void runAlgorithms(Integer initialAgentsNumber) {
-        runExperiment(initialAgentsNumber, new ElmasAlgorithm(problem));
-        runExperiment(initialAgentsNumber, new NSGAII(problem));
-        runExperiment(initialAgentsNumber, new PESA2(problem));
-        runExperiment(initialAgentsNumber, new PAES(problem));
-        runExperiment(initialAgentsNumber, new NSGAIIAdaptive(problem));
+        runExperiment(initialAgentsNumber, new ElmasAlgorithm(problem), "emas");
+        runExperiment(initialAgentsNumber, new NSGAII(problem), "NSGAII");
+        runExperiment(initialAgentsNumber, new PESA2(problem), "PESA2");
+        runExperiment(initialAgentsNumber, new PAES(problem), "PAES");
+        runExperiment(initialAgentsNumber, new NSGAIIAdaptive(problem), "NSGAIIAdaptive");
     }
 
-    private static void runExperiment(Integer initialAgentsNumber, Algorithm newAlgorithm) {
+    private static void runExperiment(Integer initialAgentsNumber, Algorithm newAlgorithm, String algorithmName) {
         algorithm = newAlgorithm;
 
         try {
@@ -66,13 +70,13 @@ public class AlgorithmsComparison {
             SolutionSet population = algorithm.execute();
             long estimatedTime = System.currentTimeMillis() - initTime;
 
-            experimentsDao.save(getExperimentResult(population, estimatedTime, initialAgentsNumber));
+            experimentsDao.save(getExperimentResult(population, estimatedTime, initialAgentsNumber, algorithmName));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static ExperimentResult getExperimentResult(SolutionSet population, long estimatedTime, Integer initialAgentsNumber) {
+    private static ExperimentResult getExperimentResult(SolutionSet population, long estimatedTime, Integer initialAgentsNumber, String algorithmName) {
         ExperimentResult experimentResult = new ExperimentResult();
         experimentResult.setEliteIslandsNumber(EmasConfig.eliteIslandsNumber);
         experimentResult.setElitism(EmasConfig.ELITISM_SWITCH);
@@ -91,6 +95,9 @@ public class AlgorithmsComparison {
         experimentResult.setIgd(indicators.getIGD(population));
         experimentResult.setGd(indicators.getGD(population));
         experimentResult.setSpread(indicators.getSpread(population));
+
+        experimentResult.setAlgorithm(algorithmName);
+        experimentResult.setExperimentNo(experimentNo);
 
         return experimentResult;
     }

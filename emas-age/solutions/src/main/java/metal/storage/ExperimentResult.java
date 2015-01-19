@@ -27,6 +27,9 @@ public class ExperimentResult {
     private int initialAgentsNumber;
     private int islandsNumber;
     private int eliteIslandsNumber;
+    private String algorithm;
+
+    private int experimentNo;
 
     public String getId() {
         return id;
@@ -146,5 +149,21 @@ public class ExperimentResult {
 
     public void setSolutionSize(int solutionSize) {
         this.solutionSize = solutionSize;
+    }
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public int getExperimentNo() {
+        return experimentNo;
+    }
+
+    public void setExperimentNo(int experimentNo) {
+        this.experimentNo = experimentNo;
     }
 }
