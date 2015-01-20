@@ -3,10 +3,7 @@ package metal;
 import jmetal.core.Algorithm;
 import jmetal.core.Problem;
 import jmetal.core.SolutionSet;
-import jmetal.metaheuristics.nsgaII.NSGAII;
-import jmetal.metaheuristics.nsgaII.NSGAIIAdaptive;
-import jmetal.metaheuristics.paes.PAES;
-import jmetal.metaheuristics.pesa2.PESA2;
+import jmetal.experiments.settings.*;
 import jmetal.problems.ZDT.ZDT3;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.JMException;
@@ -18,6 +15,7 @@ import java.util.logging.FileHandler;
 
 
 public class AlgorithmsComparison {
+    public static final String PROBLEM_NAME = "ZDT3";
     public static FileHandler fileHandler_;
 
     private static Algorithm algorithm;
@@ -44,7 +42,7 @@ public class AlgorithmsComparison {
         runExperiments();
     }
 
-    private static void runExperiments() {
+    private static void runExperiments() throws JMException {
 
         for (Integer iterationsNumber : ExperimentConfig.comparisonIterations) {
             EmasConfig.iterationsNumber = iterationsNumber;
@@ -54,12 +52,13 @@ public class AlgorithmsComparison {
 
     }
 
-    private static void runAlgorithms(Integer initialAgentsNumber) {
+    private static void runAlgorithms(Integer initialAgentsNumber) throws JMException {
         runExperiment(initialAgentsNumber, new ElmasAlgorithm(problem), "emas");
-        runExperiment(initialAgentsNumber, new NSGAII(problem), "NSGAII");
-        runExperiment(initialAgentsNumber, new PESA2(problem), "PESA2");
-        runExperiment(initialAgentsNumber, new PAES(problem), "PAES");
-        runExperiment(initialAgentsNumber, new NSGAIIAdaptive(problem), "NSGAIIAdaptive");
+        runExperiment(initialAgentsNumber, new NSGAII_Settings(PROBLEM_NAME).configure(), "NSGAII");
+        runExperiment(initialAgentsNumber, new SPEA2_Settings(PROBLEM_NAME).configure(), "SPEA2");
+        runExperiment(initialAgentsNumber, new PAES_Settings(PROBLEM_NAME).configure(), "PAES");
+        runExperiment(initialAgentsNumber, new NSGAIIAdaptive_Settings(PROBLEM_NAME).configure(), "NSGAIIAdaptive");
+        runExperiment(initialAgentsNumber, new GDE3_Settings(PROBLEM_NAME).configure(), "GDE3");
     }
 
     private static void runExperiment(Integer initialAgentsNumber, Algorithm newAlgorithm, String algorithmName) {
