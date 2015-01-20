@@ -87,7 +87,7 @@ public class PAES extends Algorithm {
     bisections     = ((Integer)this.getInputParameter("biSections")).intValue();
     archiveSize    = ((Integer)this.getInputParameter("archiveSize")).intValue();
     maxEvaluations = ((Integer)this.getInputParameter("maxEvaluations")).intValue();
-
+      maxEvaluations = 100 * maxEvaluations;
     //Read the operators        
     mutationOperator = this.operators_.get("mutation");        
 
@@ -101,8 +101,8 @@ public class PAES extends Algorithm {
     problem_.evaluate(solution);        
     problem_.evaluateConstraints(solution);
     evaluations++;
-        
-    // Add it to the archive
+
+      // Add it to the archive
     archive.add(new Solution(solution));            
    
     //Iterations....
@@ -134,8 +134,10 @@ public class PAES extends Algorithm {
         archive.printObjectivesOfValidSolutionsToFile("FUNV"+evaluations) ;
       }
       */
-        LiveEvaluator.onNewSolution(archive, false);
-    } while (evaluations < maxEvaluations);                                    
+        if (evaluations % 100 == 0) {
+            LiveEvaluator.onNewSolution(archive, false);
+        }
+    } while (evaluations < maxEvaluations);
         
     //Return the  population of non-dominated solution
     archive.printFeasibleFUN("FUN_PAES") ;

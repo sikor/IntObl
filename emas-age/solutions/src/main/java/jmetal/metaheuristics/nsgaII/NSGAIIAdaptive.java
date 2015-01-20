@@ -83,7 +83,6 @@ public class NSGAIIAdaptive extends Algorithm {
       newSolution = new Solution(problem_);
       problem_.evaluate(newSolution);
       problem_.evaluateConstraints(newSolution);
-      evaluations_++;
       newSolution.setLocation(i);
       population_.add(newSolution);
     } //for       
@@ -128,7 +127,7 @@ public class NSGAIIAdaptive extends Algorithm {
 
         } // if                            
       } // for
-        evaluations_ += 1;
+
         // Create the solutionSet union of solutionSet and offSpring
       union_ = ((SolutionSet) population_).union(offspringPopulation_);
 
@@ -216,6 +215,7 @@ public class NSGAIIAdaptive extends Algorithm {
                   / (double) totalContributionCounter;
       }
 
+        evaluations_ += 1;
         LiveEvaluator.onNewSolution(population_);
     } // while
     
