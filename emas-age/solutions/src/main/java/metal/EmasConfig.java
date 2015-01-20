@@ -30,9 +30,11 @@ public class EmasConfig {
     public static final double battleProbability = config.getDouble("battleProbability");
 //    public static final int eliteWonCountNumber = config.getInt("eliteWonCountNumber");
 
+    public static final int databaseLogStep = config.getInt("databaseLogStep");
     public static final int plottingFrequency = config.getInt("plottingFrequency");
     public static final boolean plot = config.getBoolean("plot");
     public static final boolean log = config.getBoolean("log");
+
 
     public static int wholePopulationSize() {
         return islandsNumber * initialAgentsNumber;

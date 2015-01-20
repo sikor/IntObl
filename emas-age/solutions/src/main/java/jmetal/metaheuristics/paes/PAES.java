@@ -25,6 +25,7 @@ import jmetal.core.*;
 import jmetal.util.JMException;
 import jmetal.util.archive.AdaptiveGridArchive;
 import jmetal.util.comparators.DominanceComparator;
+import metal.evaluation.LiveEvaluator;
 
 import java.util.Comparator;
 
@@ -133,6 +134,7 @@ public class PAES extends Algorithm {
         archive.printObjectivesOfValidSolutionsToFile("FUNV"+evaluations) ;
       }
       */
+        LiveEvaluator.onNewSolution(archive, false);
     } while (evaluations < maxEvaluations);                                    
         
     //Return the  population of non-dominated solution

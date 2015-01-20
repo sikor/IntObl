@@ -27,6 +27,7 @@ import jmetal.util.Distance;
 import jmetal.util.JMException;
 import jmetal.util.Ranking;
 import jmetal.util.comparators.CrowdingComparator;
+import metal.evaluation.LiveEvaluator;
 
 /**
  * Implementation of NSGA-II.
@@ -120,10 +121,10 @@ public class NSGAII extends Algorithm {
                     problem_.evaluateConstraints(offSpring[1]);
                     offspringPopulation.add(offSpring[0]);
                     offspringPopulation.add(offSpring[1]);
-                    evaluations += 2;
+
                 } // if
             } // for
-
+            evaluations += 1;
             // Create the solutionSet union of solutionSet and offSpring
             union = ((SolutionSet) population).union(offspringPopulation);
 
@@ -167,6 +168,8 @@ public class NSGAII extends Algorithm {
                 remain = 0;
             } // if
 
+            LiveEvaluator.onNewSolution(population);
+
             // This piece of code shows how to use the indicator object into the code
             // of NSGA-II. In particular, it finds the number of evaluations required
             // by the algorithm to obtain a Pareto front with a hypervolume higher
@@ -178,6 +181,7 @@ public class NSGAII extends Algorithm {
                     requiredEvaluations = evaluations;
                 } // if
             } // if
+
         } // while
 
         // Return as output parameter the required evaluations

@@ -9,6 +9,7 @@ import jmetal.operators.crossover.CrossoverFactory;
 import jmetal.operators.crossover.SBXCrossover;
 import jmetal.operators.mutation.MutationFactory;
 import jmetal.util.JMException;
+import metal.evaluation.LiveEvaluator;
 
 import java.util.*;
 
@@ -101,8 +102,9 @@ public class ElmasAlgorithm extends Algorithm {
             }
 
 
-            log(i);
-            plot(i);
+//            log(i);
+//            plot(i);
+            LiveEvaluator.onNewSolution(this);
 
         }
 
@@ -119,6 +121,12 @@ public class ElmasAlgorithm extends Algorithm {
 
 
         //write solution
+        final SolutionSet solutionSet = getNonDominatedSolutions();
+
+        return solutionSet;
+    }
+
+    public SolutionSet getNonDominatedSolutions() throws JMException {
         final SolutionSet solutionSet = new SolutionSet();
         solutionSet.setCapacity(Integer.MAX_VALUE);
 
@@ -132,7 +140,6 @@ public class ElmasAlgorithm extends Algorithm {
         if (EmasConfig.log) {
             System.out.println(">>> RETURNED SIZE: " + nonDominatedCount);
         }
-
         return solutionSet;
     }
 

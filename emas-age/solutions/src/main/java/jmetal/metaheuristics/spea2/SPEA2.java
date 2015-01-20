@@ -25,6 +25,7 @@ import jmetal.core.*;
 import jmetal.util.JMException;
 import jmetal.util.Ranking;
 import jmetal.util.Spea2Fitness;
+import metal.evaluation.LiveEvaluator;
 
 /** 
  * This class representing the SPEA2 algorithm
@@ -107,10 +108,12 @@ public class SPEA2 extends Algorithm{
         problem_.evaluate(offSpring[0]);
         problem_.evaluateConstraints(offSpring[0]);            
         offSpringSolutionSet.add(offSpring[0]);
-        evaluations++;
+
       } // while
+        evaluations++;
       // End Create a offSpring solutionSet
-      solutionSet = offSpringSolutionSet;                   
+        solutionSet = offSpringSolutionSet;
+        LiveEvaluator.onNewSolution(archive);
     } // while
         
     Ranking ranking = new Ranking(archive);

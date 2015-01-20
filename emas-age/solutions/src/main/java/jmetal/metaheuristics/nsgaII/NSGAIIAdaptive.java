@@ -9,6 +9,7 @@ import jmetal.util.comparators.CrowdingComparator;
 import jmetal.util.comparators.DominanceComparator;
 import jmetal.util.offspring.Offspring;
 import jmetal.util.offspring.PolynomialMutationOffspring;
+import metal.evaluation.LiveEvaluator;
 
 import java.util.Comparator;
 
@@ -124,11 +125,11 @@ public class NSGAIIAdaptive extends Algorithm {
 
   				problem_.evaluate(offSpring) ;
           offspringPopulation_.add(offSpring);
-  				evaluations_ +=1 ; 
+
         } // if                            
       } // for
-
-      // Create the solutionSet union of solutionSet and offSpring
+        evaluations_ += 1;
+        // Create the solutionSet union of solutionSet and offSpring
       union_ = ((SolutionSet) population_).union(offspringPopulation_);
 
       // Ranking the union
@@ -215,6 +216,7 @@ public class NSGAIIAdaptive extends Algorithm {
                   / (double) totalContributionCounter;
       }
 
+        LiveEvaluator.onNewSolution(population_);
     } // while
     
     // Return the first non-dominated front
